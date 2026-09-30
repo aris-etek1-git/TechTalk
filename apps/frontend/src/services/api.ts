@@ -385,6 +385,25 @@ export const api = {
     }
   },
 
+  async createContent(input: { title: string; url: string; source: string; type: string; summary?: string }): Promise<{ success: boolean; content?: Content; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth('/content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Failed to create content' };
+      }
+      return { success: true, content: data.content };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
   async markContentRead(contentId: string): Promise<void> {
     try {
       await this.fetchWithAuth('/content/read', {

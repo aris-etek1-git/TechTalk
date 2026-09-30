@@ -17,8 +17,9 @@ export interface ContentItem {
   body: string;
   bodyHtml?: string;
   date: string;
+  publishedAt: string;
+  likes: number;
+  comments: number;
+  views: number;
   embedCode?: string | null;
 }
-
-export type AppScreen = "auth" | "app";
-export type AppTab = "feed" | "campus" | "annals" | "campusLife" | "saved" | "profile" | "settings" | "about";

@@ -80,36 +80,41 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-5">
-      <div className="max-w-2xl mx-auto space-y-7 pb-8">
+    <div className="tt-scrollbar flex-1 overflow-y-auto px-4 py-6">
+      <div className="tt-fade-up mx-auto max-w-2xl space-y-9 pb-8">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          className="-ml-2 inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
         >
           <ArrowLeft size={18} />
           <span className="text-sm">Back to Feed</span>
         </button>
 
-        <section className="space-y-3">
-          <h2 className="text-[11px] font-mono text-muted-foreground uppercase tracking-[0.15em]">
+        <section className="space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             My campuses · {mine.length}
           </h2>
 
-          {loadingMine && <p className="text-sm text-muted-foreground">Loading…</p>}
+          {loadingMine && (
+            <div className="space-y-3">
+              <div className="tt-skeleton h-24 rounded-2xl" />
+              <p className="text-sm text-muted-foreground">Loading…</p>
+            </div>
+          )}
 
           {error && !loadingMine && (
-            <div className="p-3 rounded-xl bg-secondary border border-border flex items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">{error}</p>
-              <button onClick={loadMine} className="text-sm text-primary shrink-0">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4">
+              <p className="text-sm text-foreground">{error}</p>
+              <button onClick={loadMine} className="tt-btn tt-btn-ghost shrink-0 px-4 py-2 text-sm text-primary">
                 Retry
               </button>
             </div>
           )}
 
           {!loadingMine && !error && mine.length === 0 && (
-            <div className="p-5 rounded-2xl bg-secondary border border-border text-center">
-              <div className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center mx-auto mb-3">
-                <GraduationCap size={20} className="text-muted-foreground" />
+            <div className="tt-card tt-ring-brand p-8 text-center">
+              <div className="tt-glass tt-btn mx-auto mb-4 h-14 w-14 rounded-full text-muted-foreground">
+                <GraduationCap size={22} className="text-primary" />
               </div>
               <p className="text-sm text-muted-foreground">
                 You have not joined a campus yet. Search for your school below.
@@ -117,28 +122,28 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="tt-stagger grid grid-cols-1 gap-3 md:grid-cols-2">
             {mine.map((campus) => (
-              <div key={campus.id} className="p-3 rounded-xl bg-secondary border border-border group">
+              <div key={campus.id} className="tt-card tt-card-hover p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{campus.name}</p>
-                    <p className="text-[11px] font-mono text-muted-foreground truncate">
+                    <p className="truncate text-sm font-semibold tracking-tight text-foreground">{campus.name}</p>
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
                       {campus.organization.name}
                       {campus.city ? ` · ${campus.city}` : ""}
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-primary/80 shrink-0">
+                  <span className="inline-flex shrink-0 items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
                     {campus.myRole}
                   </span>
                 </div>
                 {campus.description && (
-                  <p className="text-[11px] text-muted-foreground mt-2 line-clamp-2">{campus.description}</p>
+                  <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{campus.description}</p>
                 )}
                 <button
                   onClick={() => handleLeave(campus)}
                   disabled={busyId === campus.id}
-                  className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
                 >
                   <LogOut size={12} />
                   Leave
@@ -148,15 +153,18 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
           </div>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-[11px] font-mono text-muted-foreground uppercase tracking-[0.15em]">Discover</h2>
+        <section className="space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Discover</h2>
           <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search
+              size={15}
+              className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-muted-foreground"
+            />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="School or city — Epitech, Lyon…"
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="tt-field w-full py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
@@ -168,20 +176,17 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
             </p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="tt-stagger grid grid-cols-1 gap-3 md:grid-cols-2">
             {results
               .filter((campus) => !mineIds.has(campus.id))
               .map((campus) => (
-                <div
-                  key={campus.id}
-                  className="p-3 rounded-xl bg-secondary border border-border flex items-center gap-3"
-                >
-                  <div className="flex-1 min-w-0">
+                <div key={campus.id} className="tt-card tt-card-hover flex items-center gap-3 p-4">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-medium text-foreground truncate">{campus.name}</p>
-                      {!campus.isPublic && <Lock size={11} className="text-muted-foreground shrink-0" />}
+                      <p className="truncate text-sm font-semibold tracking-tight text-foreground">{campus.name}</p>
+                      {!campus.isPublic && <Lock size={11} className="shrink-0 text-muted-foreground" />}
                     </div>
-                    <p className="text-[11px] font-mono text-muted-foreground truncate">
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
                       {campus.organization.name}
                       {campus.city ? ` · ${campus.city}` : ""}
                     </p>
@@ -189,7 +194,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
                   <button
                     onClick={() => handleJoin(campus)}
                     disabled={busyId === campus.id}
-                    className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                    className="tt-btn tt-btn-brand shrink-0 gap-1.5 px-4 py-2 text-xs"
                   >
                     {campus.myRole ? <Users size={12} /> : <UserPlus size={12} />}
                     {busyId === campus.id ? "…" : "Join"}

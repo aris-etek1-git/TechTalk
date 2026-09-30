@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { api, User as ApiUser } from "../services/api";
 import { Field } from "../components/Field";
 import { GoogleIcon } from "../components/GoogleIcon";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 
@@ -159,80 +160,98 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-12">
+    <div className="tt-fade-up relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-12">
+      {/* Local brand glow decorations (the app shell already paints the mesh background) */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute -left-32 -top-32 h-80 w-80 rounded-full opacity-70 blur-3xl"
+          style={{ background: "var(--brand-gradient-soft)" }}
+        />
+        <div
+          className="absolute -bottom-36 -right-28 h-80 w-80 rounded-full opacity-60 blur-3xl"
+          style={{ background: "var(--brand-gradient-soft)" }}
+        />
+      </div>
+
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
+
       {/* Wordmark */}
-      <div className="mb-14 text-center">
-        <div className="flex items-center gap-2.5 justify-center mb-3">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-            <Rss size={16} className="text-white" />
+      <div className="relative mb-12 text-center">
+        <div className="mb-4 flex items-center justify-center gap-3">
+          <div className="tt-brand-tile h-12 w-12 rounded-2xl">
+            <Rss size={20} className="text-white" />
           </div>
-          <span className="text-[26px] font-bold tracking-tight text-foreground">TechTalk</span>
+          <span className="text-3xl font-bold tracking-tight text-foreground">TechTalk</span>
         </div>
-        <p className="text-muted-foreground text-sm font-mono tracking-wide">
+        <p className="text-sm text-muted-foreground">
           TikTok for tech — discover, scroll, learn.
         </p>
       </div>
 
-      <div className="w-full max-w-sm">
-        {/* Mode toggle */}
-        <div className="flex bg-secondary rounded-xl p-1 mb-8 border border-border">
-          {(["login", "signup"] as const).map((m) => (
-            <button
-              key={m}
-              onClick={() => {
-                setMode(m);
-                setError(null);
-              }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                mode === m
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {m === "login" ? "Sign In" : "Sign Up"}
-            </button>
-          ))}
-        </div>
-
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-4 py-3 rounded-xl mb-4 font-mono">
-            {error}
-          </div>
-        )}
-
-        <div className="space-y-4">
-          {mode === "signup" && (
-            <Field label="Name" type="text" placeholder="Alex Kim" value={name} onChange={setName} />
-          )}
-          <Field label="Email" type="email" placeholder="you@example.com" value={email} onChange={setEmail} />
-          <Field label="Password" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
-
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="w-full bg-primary text-white py-3.5 rounded-xl font-semibold text-sm mt-2 hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
-          >
-            {loading ? "Please wait..." : mode === "login" ? "Sign In →" : "Create Account →"}
-          </button>
-
-          <div className="flex items-center gap-3 my-2">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground font-mono">or</span>
-            <div className="flex-1 h-px bg-border" />
+      <div className="relative w-full max-w-sm">
+        <div className="tt-card p-6 sm:p-8">
+          {/* Mode toggle */}
+          <div className="mb-8 flex gap-1 rounded-full border border-border bg-surface-2 p-1">
+            {(["login", "signup"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => {
+                  setMode(m);
+                  setError(null);
+                }}
+                className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition-all ${
+                  mode === m
+                    ? "bg-surface text-foreground shadow-card"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {m === "login" ? "Sign In" : "Sign Up"}
+              </button>
+            ))}
           </div>
 
-          {GOOGLE_CLIENT_ID && !googleLoading ? (
-            <div ref={googleBtnRef} className="w-full h-12" />
-          ) : (
-            <button
-              onClick={handleGoogleClick}
-              disabled={googleLoading}
-              className="w-full border border-border bg-secondary text-foreground py-3 rounded-xl font-medium text-sm hover:bg-muted transition-colors flex items-center justify-center gap-2.5 disabled:opacity-50"
-            >
-              <GoogleIcon />
-              {googleLoading ? "Signing in..." : "Continue with Google"}
-            </button>
+          {error && (
+            <div className="mb-6 rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-xs text-destructive">
+              {error}
+            </div>
           )}
+
+          <div className="space-y-5">
+            {mode === "signup" && (
+              <Field label="Name" type="text" placeholder="Alex Kim" value={name} onChange={setName} />
+            )}
+            <Field label="Email" type="email" placeholder="you@example.com" value={email} onChange={setEmail} />
+            <Field label="Password" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="tt-btn tt-btn-brand mt-2 w-full px-5 py-3 text-sm"
+            >
+              {loading ? "Please wait..." : mode === "login" ? "Sign In →" : "Create Account →"}
+            </button>
+
+            <div className="flex items-center gap-3 my-1">
+              <div className="tt-divider-brand flex-1" />
+              <span className="text-xs text-muted-foreground">or</span>
+              <div className="tt-divider-brand flex-1" />
+            </div>
+
+            {GOOGLE_CLIENT_ID && !googleLoading ? (
+              <div ref={googleBtnRef} className="w-full h-12" />
+            ) : (
+              <button
+                onClick={handleGoogleClick}
+                disabled={googleLoading}
+                className="tt-btn tt-btn-ghost w-full px-4 py-3 text-sm"
+              >
+                <GoogleIcon />
+                {googleLoading ? "Signing in..." : "Continue with Google"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

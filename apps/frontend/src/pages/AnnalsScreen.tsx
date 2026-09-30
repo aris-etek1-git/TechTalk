@@ -220,21 +220,33 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
   }
 
   if (loadingOrganizations) {
-    return <div className="flex-1 overflow-y-auto px-4 py-5 text-sm text-muted-foreground">Loading…</div>;
+    return (
+      <div className="flex-1 overflow-y-auto px-4 py-5">
+        <div className="max-w-2xl mx-auto space-y-3">
+          <div className="tt-skeleton h-8 w-40" />
+          <div className="tt-skeleton h-24" />
+          <div className="tt-skeleton h-24" />
+          <div className="tt-skeleton h-24" />
+        </div>
+      </div>
+    );
   }
 
   if (organizations.length === 0) {
     return (
       <div className="flex-1 overflow-y-auto px-4 py-5">
-        <div className="max-w-2xl mx-auto space-y-5 pb-8">
+        <div className="tt-fade-up mx-auto max-w-2xl space-y-5 pb-8">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="tt-btn -ml-2 gap-2 p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             <ArrowLeft size={18} />
             <span className="text-sm">Back</span>
           </button>
-          <div className="p-5 rounded-2xl bg-secondary border border-border text-center">
+          <div className="tt-card tt-ring-brand p-8 text-center">
+            <div className="tt-glass mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full text-muted-foreground">
+              <BookOpen size={22} />
+            </div>
             <p className="text-sm text-muted-foreground">
               Join a campus first — past papers are shared inside your school.
             </p>
@@ -247,7 +259,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
   if (course) {
     return (
       <div className="flex-1 overflow-y-auto px-4 py-5">
-        <div className="max-w-2xl mx-auto space-y-5 pb-8">
+        <div className="tt-fade-up mx-auto max-w-2xl space-y-6 pb-8">
           <button
             onClick={() => {
               const orgId = course.organizationId;
@@ -255,38 +267,43 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
               setDocuments([]);
               void loadCourses(orgId, courseQuery.trim());
             }}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="tt-btn -ml-2 gap-2 p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             <ArrowLeft size={18} />
             <span className="text-sm">All courses</span>
           </button>
 
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">{course.name}</h2>
-            <p className="text-[11px] font-mono text-muted-foreground">{course.organizationName}</p>
+          <div className="flex items-center gap-3">
+            <div className="tt-brand-tile flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl">
+              <FileText size={20} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="truncate text-xl font-bold tracking-tight text-foreground">{course.name}</h2>
+              <p className="truncate text-[11px] font-mono text-muted-foreground">{course.organizationName}</p>
+            </div>
           </div>
 
-          <section className="space-y-3 p-4 rounded-2xl bg-secondary border border-border">
-            <h3 className="text-[11px] font-mono text-muted-foreground uppercase tracking-[0.15em]">
+          <section className="tt-card space-y-3 p-5">
+            <h3 className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
               Add a past paper
             </h3>
             <input
               ref={fileInput}
               type="file"
               accept="application/pdf,image/png,image/jpeg"
-              className="text-xs text-muted-foreground file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-primary file:text-primary-foreground file:text-[11px]"
+              className="tt-field w-full px-4 py-3 text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-[11px] file:font-semibold file:text-primary-foreground"
             />
             <input
               value={uploadTitle}
               onChange={(event) => setUploadTitle(event.target.value)}
               placeholder="Title — defaults to the file name"
-              className="w-full px-3 py-2 rounded-xl bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="tt-field w-full px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground"
             />
             <div className="flex flex-wrap gap-2">
               <select
                 value={uploadPeriod}
                 onChange={(event) => setUploadPeriod(event.target.value)}
-                className="px-3 py-2 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="tt-field px-4 py-2.5 text-sm text-foreground"
               >
                 <option value="">Semester</option>
                 {PERIODS.map((value) => (
@@ -299,12 +316,12 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 value={uploadYear}
                 onChange={(event) => setUploadYear(event.target.value)}
                 placeholder="2025-2026"
-                className="flex-1 min-w-[120px] px-3 py-2 rounded-xl bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="tt-field min-w-[120px] flex-1 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground"
               />
               <button
                 onClick={handleUpload}
                 disabled={uploading}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-[11px] font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="tt-btn tt-btn-brand shrink-0 px-5 py-2.5 text-sm"
               >
                 <Upload size={13} />
                 {uploading ? "Uploading…" : "Upload"}
@@ -314,19 +331,19 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
 
           <section className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[160px]">
-                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <div className="relative min-w-[160px] flex-1">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   value={docQuery}
                   onChange={(event) => setDocQuery(event.target.value)}
                   placeholder="Search titles…"
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="tt-field w-full py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
                 />
               </div>
               <select
                 value={period}
                 onChange={(event) => setPeriod(event.target.value)}
-                className="px-2.5 py-2 rounded-xl bg-secondary border border-border text-xs text-foreground"
+                className="tt-field px-3 py-2.5 text-xs text-foreground"
               >
                 <option value="">All semesters</option>
                 {PERIODS.map((value) => (
@@ -339,48 +356,61 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 value={academicYear}
                 onChange={(event) => setAcademicYear(event.target.value)}
                 placeholder="Year"
-                className="w-24 px-2.5 py-2 rounded-xl bg-secondary border border-border text-xs text-foreground placeholder:text-muted-foreground"
+                className="tt-field w-28 px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground"
               />
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value as "recent" | "downloads")}
-                className="px-2.5 py-2 rounded-xl bg-secondary border border-border text-xs text-foreground"
+                className="tt-field px-3 py-2.5 text-xs text-foreground"
               >
                 <option value="recent">Newest</option>
                 <option value="downloads">Most downloaded</option>
               </select>
             </div>
 
-            {loadingDocuments && <p className="text-sm text-muted-foreground">Loading…</p>}
-
-            {!loadingDocuments && documents.length === 0 && (
-              <p className="text-sm text-muted-foreground">No past paper matches these filters yet.</p>
+            {loadingDocuments && (
+              <div className="space-y-2.5">
+                <div className="tt-skeleton h-[72px]" />
+                <div className="tt-skeleton h-[72px]" />
+                <div className="tt-skeleton h-[72px]" />
+              </div>
             )}
 
-            <div className="space-y-2">
+            {!loadingDocuments && documents.length === 0 && (
+              <div className="tt-card p-8 text-center">
+                <div className="tt-glass mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full text-muted-foreground">
+                  <FileText size={20} />
+                </div>
+                <p className="text-sm text-muted-foreground">No past paper matches these filters yet.</p>
+              </div>
+            )}
+
+            <div className="tt-stagger space-y-2.5">
               {documents.map((doc) => (
-                <div key={doc.id} className="p-3 rounded-xl bg-secondary border border-border">
-                  <div className="flex items-start gap-3">
-                    <FileText size={16} className="text-muted-foreground shrink-0 mt-0.5" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{doc.title}</p>
-                      <p className="text-[11px] font-mono text-muted-foreground truncate">
+                <div key={doc.id} className="tt-card tt-card-hover group px-4 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="tt-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors group-hover:text-foreground">
+                      <FileText size={16} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground">{doc.title}</p>
+                      <p className="truncate text-[11px] font-mono text-muted-foreground">
                         {doc.period ? `${doc.period} · ` : ""}
                         {doc.academicYear ? `${doc.academicYear} · ` : ""}
                         {formatBytes(doc.sizeBytes)} · {doc.downloads} downloads
                         {doc.status !== "approved" ? ` · ${doc.status}` : ""}
                       </p>
                       {doc.isMine && doc.status === "pending" && (
-                        <p className="text-[11px] text-muted-foreground mt-1">
+                        <p className="mt-1 text-[11px] text-muted-foreground">
                           Only you see this until a moderator approves it.
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex shrink-0 items-center gap-1">
                       <button
                         onClick={() => handleDownload(doc)}
                         disabled={busyId === doc.id}
-                        className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background transition-colors disabled:opacity-50"
+                        className="tt-btn p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground md:opacity-50 md:group-hover:opacity-100"
                         aria-label="Download"
                       >
                         <Download size={14} />
@@ -389,7 +419,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         <button
                           onClick={() => handleStatus(doc, "approved")}
                           disabled={busyId === doc.id}
-                          className="p-2 rounded-lg text-emerald-500 hover:bg-background transition-colors disabled:opacity-50"
+                          className="tt-btn p-2 text-emerald-600 transition-colors hover:bg-emerald-500/10 dark:text-emerald-400"
                           aria-label="Approve"
                         >
                           <Check size={14} />
@@ -399,7 +429,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         <button
                           onClick={() => handleStatus(doc, "rejected")}
                           disabled={busyId === doc.id}
-                          className="p-2 rounded-lg text-red-500 hover:bg-background transition-colors disabled:opacity-50"
+                          className="tt-btn p-2 text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
                           aria-label="Reject"
                         >
                           <X size={14} />
@@ -409,7 +439,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         <button
                           onClick={() => handleDelete(doc)}
                           disabled={busyId === doc.id}
-                          className="p-2 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-background transition-colors disabled:opacity-50"
+                          className="tt-btn p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-red-600 dark:hover:text-red-400"
                           aria-label="Delete"
                         >
                           <Trash2 size={14} />
@@ -428,10 +458,10 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-5">
-      <div className="max-w-2xl mx-auto space-y-6 pb-8">
+      <div className="tt-fade-up mx-auto max-w-2xl space-y-6 pb-8">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          className="tt-btn -ml-2 gap-2 p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
         >
           <ArrowLeft size={18} />
           <span className="text-sm">Back</span>
@@ -443,10 +473,10 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
               <button
                 key={org.id}
                 onClick={() => selectOrganization(org.id)}
-                className={`px-3 py-1.5 rounded-full border text-[11px] font-mono transition-colors ${
+                className={`px-4 py-1.5 text-xs ${
                   org.id === organizationId
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                    ? "tt-btn tt-btn-brand"
+                    : "tt-btn tt-btn-ghost text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {org.name}
@@ -456,37 +486,49 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
         )}
 
         <section className="space-y-3">
-          <h2 className="text-[11px] font-mono text-muted-foreground uppercase tracking-[0.15em]">Courses</h2>
+          <h2 className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Courses</h2>
           <div className="relative">
-            <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <BookOpen size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               value={courseQuery}
               onChange={(event) => setCourseQuery(event.target.value)}
               placeholder="Search a course…"
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="tt-field w-full py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
-          {loadingCourses && <p className="text-sm text-muted-foreground">Loading…</p>}
+          {loadingCourses && (
+            <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
+              <div className="tt-skeleton h-[96px]" />
+              <div className="tt-skeleton h-[96px]" />
+              <div className="tt-skeleton h-[96px]" />
+              <div className="tt-skeleton h-[96px]" />
+            </div>
+          )}
 
           {!loadingCourses && courses.length === 0 && (
-            <p className="text-sm text-muted-foreground">
+            <p className="tt-card p-6 text-center text-sm text-muted-foreground">
               No course yet. Add the first one below so students can share its papers.
             </p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="tt-stagger grid grid-cols-1 gap-2.5 md:grid-cols-2">
             {courses.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setCourse(item)}
-                className="text-left p-3 rounded-xl bg-secondary border border-border hover:border-primary/40 transition-colors"
+                className="tt-card tt-card-hover group flex items-center gap-3 p-4 text-left"
               >
-                <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
-                <p className="text-[11px] font-mono text-muted-foreground truncate">{item.slug}</p>
-                <p className="text-[11px] text-muted-foreground mt-2">
-                  {item.documentCount} paper{item.documentCount === 1 ? "" : "s"}
-                </p>
+                <span className="tt-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors group-hover:text-foreground">
+                  <BookOpen size={16} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-foreground">{item.name}</span>
+                  <span className="block truncate text-[11px] font-mono text-muted-foreground">{item.slug}</span>
+                  <span className="mt-2 block text-[11px] text-muted-foreground">
+                    {item.documentCount} paper{item.documentCount === 1 ? "" : "s"}
+                  </span>
+                </span>
               </button>
             ))}
           </div>
@@ -494,23 +536,23 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
 
         <form
           onSubmit={handleCreateCourse}
-          className="space-y-2 p-4 rounded-2xl bg-secondary border border-border flex items-end gap-2"
+          className="tt-card flex items-end gap-3 p-5"
         >
           <label className="flex-1 space-y-1.5">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-[0.15em]">
+            <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
               New course
             </span>
             <input
               value={newCourseName}
               onChange={(event) => setNewCourseName(event.target.value)}
               placeholder="Databases — Advanced SQL"
-              className="w-full mt-1 px-3 py-2 rounded-xl bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="tt-field mt-1 w-full px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground"
             />
           </label>
           <button
             type="submit"
             disabled={creatingCourse || newCourseName.trim().length < 2}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-[11px] font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="tt-btn tt-btn-brand shrink-0 px-5 py-3 text-sm"
           >
             <Plus size={13} />
             {creatingCourse ? "…" : "Create"}
