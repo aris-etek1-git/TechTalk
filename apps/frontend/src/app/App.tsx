@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Rss, Search, Bookmark, User, Settings, X } from "lucide-react";
+import { Rss, Search, Bookmark, User, Users, Settings, X, GraduationCap, BookOpen } from "lucide-react";
 import { Toaster } from "sonner";
 import { api, User as ApiUser } from "../services/api";
 import { ContentItem, AppScreen, AppTab } from "../types/content";
 import { AuthScreen } from "../pages/AuthScreen";
 import { FeedScreen } from "../pages/FeedScreen";
+import { CampusScreen } from "../pages/CampusScreen";
+import { AnnalsScreen } from "../pages/AnnalsScreen";
+import { CampusLifeScreen } from "../pages/CampusLifeScreen";
 import { SavedScreen } from "../pages/SavedScreen";
 import { ProfileScreen } from "../pages/ProfileScreen";
 import { SettingsScreen } from "../pages/SettingsScreen";
@@ -319,11 +322,36 @@ function MainApp({ user, onUserUpdate, onLogout }: { user: ApiUser | null; onUse
 
   const headerTitle: Record<AppTab, string> = {
     feed: "TechTalk",
+    campus: "Campus",
+    annals: "Annales",
+    campusLife: "Vie de campus",
     saved: "Saved",
     profile: "Profile",
     settings: "Settings",
     about: "About",
   };
+
+  // Rendered in both header layouts: the feed is where a student lands, so
+  // hiding these icons outside it would make the student features unreachable.
+  const studentTabs: { target: AppTab; label: string; icon: typeof GraduationCap }[] = [
+    { target: "campus", label: "Campus", icon: GraduationCap },
+    { target: "annals", label: "Annales", icon: BookOpen },
+    { target: "campusLife", label: "Vie de campus", icon: Users },
+  ];
+
+  const studentTabButtons = studentTabs
+    .filter((entry) => entry.target !== tab)
+    .map(({ target, label, icon: Icon }) => (
+      <button
+        key={target}
+        onClick={() => setTab(target)}
+        aria-label={label}
+        title={label}
+        className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+      >
+        <Icon size={18} />
+      </button>
+    ));
 
   return (
     <div className="h-dvh bg-background flex flex-col max-w-screen overflow-hidden">
@@ -362,6 +390,7 @@ function MainApp({ user, onUserUpdate, onLogout }: { user: ApiUser | null; onUse
               <span className="text-[18px] font-bold tracking-tight text-foreground">TechTalk</span>
             </div>
             <div className="flex items-center gap-1">
+              {studentTabButtons}
               <button
                 onClick={() => setIsSearching(true)}
                 className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl hover:bg-secondary"
@@ -406,6 +435,7 @@ function MainApp({ user, onUserUpdate, onLogout }: { user: ApiUser | null; onUse
           <>
             <h1 className="text-[18px] font-bold text-foreground">{headerTitle[tab]}</h1>
             <div className="flex items-center gap-1">
+              {studentTabButtons}
               {tab !== "saved" && (
                 <button
                   onClick={() => setTab("saved")}
@@ -468,6 +498,9 @@ function MainApp({ user, onUserUpdate, onLogout }: { user: ApiUser | null; onUse
             onFilterChange={setContentType}
           />
         )}
+        {tab === "campus" && <CampusScreen onBack={() => setTab("feed")} />}
+        {tab === "annals" && <AnnalsScreen onBack={() => setTab("feed")} />}
+        {tab === "campusLife" && <CampusLifeScreen onBack={() => setTab("feed")} />}
         {tab === "saved" && (
           <SavedScreen
             saved={saved}

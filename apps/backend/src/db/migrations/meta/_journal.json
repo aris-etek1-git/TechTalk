@@ -71,6 +71,27 @@
       "when": 1786357630504,
       "tag": "0009_familiar_xavin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1790707647781,
+      "tag": "0010_graceful_starhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1790773480809,
+      "tag": "0011_dusty_black_bird",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1790785901324,
+      "tag": "0012_loud_justice",
+      "breakpoints": true
     }
   ]
 }

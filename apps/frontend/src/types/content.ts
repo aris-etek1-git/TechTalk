@@ -21,4 +21,4 @@ export interface ContentItem {
 }
 
 export type AppScreen = "auth" | "app";
-export type AppTab = "feed" | "saved" | "profile" | "settings" | "about";
+export type AppTab = "feed" | "campus" | "annals" | "campusLife" | "saved" | "profile" | "settings" | "about";

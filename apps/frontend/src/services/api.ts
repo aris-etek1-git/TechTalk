@@ -25,6 +25,108 @@ export interface Content {
   createdAt: string;
 }
 
+export type CampusRole = 'member' | 'moderator' | 'admin';
+
+export interface Campus {
+  id: string;
+  organizationId: string;
+  name: string;
+  slug: string;
+  city: string | null;
+  description: string | null;
+  isPublic: boolean;
+  createdAt: string;
+  organization: { id: string; name: string; slug: string };
+  myRole: CampusRole | null;
+}
+
+export interface CampusMember {
+  userId: string;
+  name: string;
+  picture: string | null;
+  role: CampusRole;
+  joinedAt: string;
+  email?: string;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface Course {
+  id: string;
+  organizationId: string;
+  name: string;
+  slug: string;
+  organizationName: string;
+  documentCount: number;
+}
+
+export type DocumentStatus = 'pending' | 'approved' | 'rejected';
+
+export interface GroupMember {
+  userId: string;
+  role: 'member' | 'host';
+  joinedAt: string;
+  name: string;
+  picture: string | null;
+}
+
+export interface Group {
+  id: string;
+  campusId: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  topic: string | null;
+  capacity: number | null;
+  createdBy: string | null;
+  createdAt: string;
+  memberCount: number;
+  myRole: 'member' | 'host' | null;
+  campus?: { id: string; name: string; slug: string; city: string | null };
+}
+
+export type RsvpStatus = 'going' | 'interested';
+
+export interface CampusEvent {
+  id: string;
+  campusId: string;
+  groupId: string | null;
+  title: string;
+  description: string | null;
+  location: string;
+  startsAt: string;
+  endsAt: string | null;
+  capacity: number | null;
+  status: 'scheduled' | 'cancelled';
+  createdBy: string | null;
+  createdAt: string;
+  goingCount: number;
+  myRsvp: RsvpStatus | null;
+  seatsLeft: number | null;
+  campus?: { id: string; name: string; slug: string; city: string | null };
+}
+
+export interface CourseDocument {
+  id: string;
+  courseId: string;
+  title: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  period: string | null;
+  academicYear: string | null;
+  status: DocumentStatus;
+  downloads: number;
+  uploaderId: string | null;
+  createdAt: string;
+  isMine: boolean;
+  canModerate: boolean;
+}
+
 export const api = {
   getToken(): string | null {
     return localStorage.getItem('teachtalk_token');
@@ -321,6 +423,345 @@ export const api = {
     } catch (err) {
       console.error("Failed to fetch server reading history:", err);
       return null;
+    }
+  },
+
+  async getOrganizations(): Promise<Organization[]> {
+    const response = await this.fetchWithAuth('/organizations');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch organizations: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.organizations) ? data.organizations : [];
+  },
+
+  async getCampuses(options: { search?: string; organizationId?: string } = {}): Promise<Campus[]> {
+    const params = new URLSearchParams();
+    if (options.search) params.set('search', options.search);
+    if (options.organizationId) params.set('organizationId', options.organizationId);
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/campuses${query ? `?${query}` : ''}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch campuses: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.campuses) ? data.campuses : [];
+  },
+
+  async getMyCampuses(): Promise<Campus[]> {
+    const response = await this.fetchWithAuth('/campuses/mine');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch your campuses: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.campuses) ? data.campuses : [];
+  },
+
+  async getCampusMembers(campusId: string): Promise<CampusMember[]> {
+    const response = await this.fetchWithAuth(`/campuses/${campusId}/members`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch campus members: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.members) ? data.members : [];
+  },
+
+  async joinCampus(campusId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/campuses/${campusId}/join`, { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Failed to join this campus' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async leaveCampus(campusId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/campuses/${campusId}/membership`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Failed to leave this campus' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async getCourses(options: { organizationId?: string; search?: string } = {}): Promise<Course[]> {
+    const params = new URLSearchParams();
+    if (options.organizationId) params.set('organizationId', options.organizationId);
+    if (options.search) params.set('search', options.search);
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/courses${query ? `?${query}` : ''}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch courses: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.courses) ? data.courses : [];
+  },
+
+  async createCourse(organizationId: string, name: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth('/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ organizationId, name }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Failed to create the course' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async getDocuments(
+    courseId: string,
+    options: { search?: string; period?: string; academicYear?: string; sort?: 'recent' | 'downloads' } = {}
+  ): Promise<CourseDocument[]> {
+    const params = new URLSearchParams();
+    if (options.search) params.set('search', options.search);
+    if (options.period) params.set('period', options.period);
+    if (options.academicYear) params.set('academicYear', options.academicYear);
+    if (options.sort) params.set('sort', options.sort);
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/courses/${courseId}/documents${query ? `?${query}` : ''}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch documents: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.documents) ? data.documents : [];
+  },
+
+  // No Content-Type header here: the browser has to add the multipart boundary itself.
+  async uploadDocument(
+    courseId: string,
+    input: { file: File; title?: string; period?: string; academicYear?: string; campusId?: string }
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      const form = new FormData();
+      form.append('file', input.file);
+      if (input.title) form.append('title', input.title);
+      if (input.period) form.append('period', input.period);
+      if (input.academicYear) form.append('academicYear', input.academicYear);
+      if (input.campusId) form.append('campusId', input.campusId);
+
+      const response = await this.fetchWithAuth(`/courses/${courseId}/documents`, {
+        method: 'POST',
+        body: form,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Upload failed' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  /** Returns a short-lived presigned bucket URL; the file never passes through the API. */
+  async getDownloadUrl(documentId: string): Promise<{ success: boolean; url?: string; fileName?: string; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/documents/${documentId}/download`);
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Download is not available' };
+      }
+      return { success: true, url: data.url, fileName: data.fileName };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async setDocumentStatus(documentId: string, status: DocumentStatus): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/documents/${documentId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Failed to update the document' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async deleteDocument(documentId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/documents/${documentId}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Failed to remove the document' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async getMyGroups(): Promise<Group[]> {
+    const response = await this.fetchWithAuth('/groups/mine');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch your groups: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.groups) ? data.groups : [];
+  },
+
+  async getCampusGroups(campusId: string, options: { search?: string; sort?: 'recent' | 'popular' | 'name' } = {}): Promise<Group[]> {
+    const params = new URLSearchParams();
+    if (options.search) params.set('search', options.search);
+    if (options.sort) params.set('sort', options.sort);
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/campuses/${campusId}/groups${query ? `?${query}` : ''}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch groups: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.groups) ? data.groups : [];
+  },
+
+  async createGroup(campusId: string, input: { name: string; topic?: string; description?: string; capacity?: number | null }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/campuses/${campusId}/groups`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Failed to create the group' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async joinGroup(groupId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/groups/${groupId}/join`, { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Failed to join this group' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async leaveGroup(groupId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/groups/${groupId}/membership`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Failed to leave this group' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async getMyEvents(): Promise<CampusEvent[]> {
+    const response = await this.fetchWithAuth('/events/mine');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch your events: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.events) ? data.events : [];
+  },
+
+  async getCampusEvents(campusId: string, options: { includePast?: boolean } = {}): Promise<CampusEvent[]> {
+    const query = options.includePast ? '?includePast=true' : '';
+
+    const response = await this.fetchWithAuth(`/campuses/${campusId}/events${query}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch events: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.events) ? data.events : [];
+  },
+
+  async createEvent(campusId: string, input: { title: string; location: string; startsAt: string; endsAt?: string; description?: string; capacity?: number | null }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/campuses/${campusId}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        const fields = data.fields ? Object.values(data.fields).flat().join(' ') : '';
+        return { success: false, error: data.error || fields || data.message || 'Failed to create the event' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async rsvpEvent(eventId: string, status: RsvpStatus): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/events/${eventId}/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Failed to save your response' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async cancelRsvp(eventId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/events/${eventId}/rsvp`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Failed to remove your response' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  },
+
+  async cancelEvent(eventId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/events/${eventId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'cancelled' }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || data.message || 'Failed to cancel the event' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
     }
   }
 };
