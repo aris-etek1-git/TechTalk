@@ -19,6 +19,12 @@ import {
   Newspaper,
   BookText,
   Layers,
+  Github,
+  Braces,
+  Target,
+  FolderKanban,
+  BriefcaseBusiness,
+  Bot,
 } from "lucide-react";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { Brand } from "../components/Brand";
@@ -26,25 +32,33 @@ import { useAppStore } from "./store";
 import { SIDEBAR_CATEGORIES } from "../lib/content";
 
 const NAV_ITEMS = [
+  { to: "/dashboard", label: "Tableau de bord", icon: Home },
   { to: "/feed", label: "Accueil", icon: Home },
   { to: "/explore", label: "Explorer", icon: Compass },
-  { to: "/create", label: "Créer", icon: PlusSquare },
-  { to: "/profile?tab=favoris", label: "Favoris", icon: Bookmark },
-  { to: "/profile?tab=historique", label: "Historique", icon: History },
+  { to: "/practice", label: "Pratiquer", icon: Target },
+  { to: "/projects", label: "Projets", icon: FolderKanban },
+  { to: "/people", label: "Personnes", icon: Users },
+  { to: "/opportunities", label: "Opportunités", icon: BriefcaseBusiness },
+  { to: "/ai", label: "Assistant IA", icon: Bot },
 ];
 
 const CAMPUS_ITEMS = [
   { to: "/campus", label: "Campus", icon: GraduationCap },
   { to: "/annals", label: "Annales", icon: BookOpen },
   { to: "/campus-life", label: "Vie de campus", icon: Users },
+  { to: "/create", label: "Publier", icon: PlusSquare },
+  { to: "/profile?tab=favoris", label: "Favoris", icon: Bookmark },
+  { to: "/profile?tab=historique", label: "Historique", icon: History },
 ];
 
 const SOURCES = [
   { label: "YouTube", value: "YouTube", icon: Youtube, tint: "text-primary" },
   { label: "Reddit", value: "Reddit", icon: MessageCircle, tint: "text-accent" },
-  { label: "Dev.to", value: "Dev.to", icon: Code2, tint: "text-blue-400" },
-  { label: "TechCrunch", value: "TechCrunch", icon: Newspaper, tint: "text-blue-500" },
-  { label: "Medium", value: "Medium", icon: BookText, tint: "text-blue-300" },
+  { label: "GitHub", value: "GitHub", icon: Github, tint: "text-foreground" },
+  { label: "LeetCode", value: "LeetCode", icon: Braces, tint: "text-primary" },
+  { label: "Dev.to", value: "Dev.to", icon: Code2, tint: "text-accent" },
+  { label: "TechCrunch", value: "TechCrunch", icon: Newspaper, tint: "text-accent" },
+  { label: "Medium", value: "Medium", icon: BookText, tint: "text-accent" },
 ];
 
 function SidebarLink({

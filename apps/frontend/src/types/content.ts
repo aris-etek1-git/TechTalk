@@ -1,4 +1,4 @@
-export type ContentSource = "Reddit" | "YouTube" | "Medium" | "Dev.to" | "TechCrunch";
+export type ContentSource = "Reddit" | "YouTube" | "GitHub" | "LeetCode" | "Medium" | "Dev.to" | "TechCrunch";
 export type ContentType = "article" | "video" | "social_post";
 
 export interface ContentItem {

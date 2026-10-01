@@ -896,3 +896,226 @@
     transparent
   );
 }
+
+/* ------------------------------------------------------------------
+   Wild scholar direction
+
+   The interface uses only blue, red, black, white and opacity. Depth
+  comes from paper-like surfaces, hairlines and controlled asymmetry instead
+   of colored gradients or ornamental glass.
+------------------------------------------------------------------ */
+:root,
+.dark {
+  --background: #f7f7f4;
+  --foreground: #07101f;
+  --card: rgba(255, 255, 255, 0.94);
+  --card-foreground: #07101f;
+  --popover: rgba(255, 255, 255, 0.98);
+  --popover-foreground: #07101f;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(7, 16, 31, 0.06);
+  --secondary-foreground: #07101f;
+  --muted: rgba(7, 16, 31, 0.06);
+  --muted-foreground: rgba(7, 16, 31, 0.58);
+  --accent: #5eead4;
+  --accent-foreground: #07101f;
+  --destructive: #f97316;
+  --destructive-foreground: #ffffff;
+  --border: rgba(7, 16, 31, 0.14);
+  --input: #ffffff;
+  --input-background: #ffffff;
+  --switch-background: rgba(7, 16, 31, 0.22);
+  --ring: rgba(18, 75, 214, 0.42);
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-2: rgba(7, 16, 31, 0.055);
+  --surface-3: rgba(18, 75, 214, 0.1);
+  --glass: rgba(255, 255, 255, 0.94);
+  --glass-strong: rgba(255, 255, 255, 0.98);
+  --glass-border: rgba(7, 16, 31, 0.14);
+  --hairline: rgba(7, 16, 31, 0.14);
+  --sheen: transparent;
+  --sheen-flat: transparent;
+  --chip-glass: transparent;
+  --ice-inset: inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(7, 16, 31, 0.06);
+  --claw-ink: rgba(7, 16, 31, 0.16);
+  --blue: #5eead4;
+  --blue-bright: #99f6e4;
+  --blue-soft: rgba(94, 234, 212, 0.1);
+  --red: #f97316;
+  --red-soft: rgba(249, 115, 22, 0.1);
+  --brand: #5eead4;
+  --brand-blue: #5eead4;
+  --brand-cyan: #5eead4;
+  --brand-gradient-soft: transparent;
+  --brand-blue-soft: rgba(94, 234, 212, 0.1);
+  --brand-orange-soft: rgba(249, 115, 22, 0.1);
+  --scrim: rgba(0, 0, 0, 0.72);
+  --mesh: transparent;
+  --shadow-card: 0 1px 0 rgba(7, 16, 31, 0.08), 0 18px 36px -28px rgba(7, 16, 31, 0.48);
+  --shadow-raised: 0 1px 0 rgba(7, 16, 31, 0.1), 0 26px 46px -30px rgba(7, 16, 31, 0.56);
+  --glow-primary: 0 12px 30px -18px rgba(249, 115, 22, 0.6);
+  --glow-cyan: 0 12px 30px -18px rgba(94, 234, 212, 0.55);
+  --sidebar: rgba(255, 255, 255, 0.96);
+  --sidebar-foreground: #07101f;
+  --sidebar-primary: #5eead4;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(94, 234, 212, 0.08);
+  --sidebar-accent-foreground: #07101f;
+  --sidebar-border: rgba(7, 16, 31, 0.14);
+  --sidebar-ring: rgba(94, 234, 212, 0.42);
+}
+
+.dark {
+  --background: #08090c;
+  --foreground: #f6f7f9;
+  --card: rgba(18, 20, 25, 0.96);
+  --card-foreground: #f6f7f9;
+  --popover: rgba(18, 20, 25, 0.98);
+  --popover-foreground: #f6f7f9;
+  --secondary: rgba(255, 255, 255, 0.07);
+  --secondary-foreground: #f6f7f9;
+  --muted: rgba(255, 255, 255, 0.07);
+  --muted-foreground: rgba(246, 247, 249, 0.58);
+  --accent: #5eead4;
+  --accent-foreground: #07101f;
+  --primary: #fb923c;
+  --destructive: #fb923c;
+  --border: rgba(255, 255, 255, 0.15);
+  --input: rgba(255, 255, 255, 0.06);
+  --input-background: rgba(255, 255, 255, 0.06);
+  --switch-background: rgba(255, 255, 255, 0.22);
+  --ring: rgba(78, 130, 255, 0.56);
+  --surface: rgba(18, 20, 25, 0.96);
+  --surface-2: rgba(255, 255, 255, 0.07);
+  --surface-3: rgba(94, 234, 212, 0.12);
+  --glass: rgba(18, 20, 25, 0.96);
+  --glass-strong: rgba(8, 9, 12, 0.98);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --hairline: rgba(255, 255, 255, 0.16);
+  --ice-inset: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.42);
+  --claw-ink: rgba(255, 255, 255, 0.18);
+  --blue: #5eead4;
+  --blue-bright: #99f6e4;
+  --blue-soft: rgba(94, 234, 212, 0.14);
+  --red: #fb923c;
+  --red-soft: rgba(251, 146, 60, 0.14);
+  --brand: #5eead4;
+  --brand-blue: #5eead4;
+  --brand-cyan: #5eead4;
+  --brand-blue-soft: rgba(94, 234, 212, 0.14);
+  --brand-orange-soft: rgba(251, 146, 60, 0.14);
+  --scrim: rgba(0, 0, 0, 0.82);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.08), 0 22px 48px -30px rgba(0, 0, 0, 0.95);
+  --shadow-raised: 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 56px -32px rgba(0, 0, 0, 1);
+  --sidebar: rgba(16, 13, 28, 0.98);
+  --sidebar-foreground: #f6f7f9;
+  --sidebar-primary: #5eead4;
+  --sidebar-primary-foreground: #05070b;
+  --sidebar-accent: rgba(94, 234, 212, 0.12);
+  --sidebar-accent-foreground: #f6f7f9;
+  --sidebar-border: rgba(255, 255, 255, 0.15);
+  --sidebar-ring: rgba(94, 234, 212, 0.5);
+}
+
+.tt-shell {
+  position: relative;
+  isolation: isolate;
+  background: var(--background);
+}
+
+.tt-shell::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  top: 8vh;
+  right: 3vw;
+  width: 15rem;
+  height: 7rem;
+  opacity: 0.11;
+  background: var(--primary);
+  clip-path: polygon(0 45%, 17% 32%, 36% 42%, 58% 16%, 79% 33%, 100% 0, 93% 100%, 70% 64%, 49% 84%, 28% 59%, 8% 78%);
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+
+.tt-glass,
+.tt-glass-strong,
+.tt-ice,
+.tt-surface,
+.tt-card,
+.tt-field,
+.tt-chip,
+.tt-btn-ghost {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-image: none;
+}
+
+.tt-glass,
+.tt-glass-strong,
+.tt-surface,
+.tt-card {
+  border-radius: 0.85rem;
+}
+
+.tt-card::before,
+.tt-ice::before {
+  display: none;
+}
+
+.tt-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--blue);
+}
+
+.tt-logo,
+.tt-gradient-text,
+.tt-gradient-text-blue {
+  background: none;
+  color: var(--blue);
+  -webkit-text-fill-color: currentColor;
+}
+
+.tt-btn-brand,
+.tt-btn-blue,
+.tt-brand-tile,
+.tt-brand-tile-orange,
+.tt-logo-mark {
+  background-image: none;
+}
+
+.tt-btn-brand,
+.tt-brand-tile,
+.tt-logo-mark {
+  background-color: var(--blue);
+}
+
+.tt-btn-blue {
+  background-color: var(--blue);
+}
+
+.tt-brand-tile-orange {
+  background-color: var(--red);
+}
+
+.tt-btn-brand:hover,
+.tt-btn-blue:hover {
+  box-shadow: 0 10px 24px -16px var(--blue);
+}
+
+.tt-scratch {
+  background: var(--hairline);
+}
+
+.tt-divider-brand {
+  background: var(--hairline);
+}
+
+.tt-skeleton::after {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.tt-logo-mark::after {
+  display: none;
+}

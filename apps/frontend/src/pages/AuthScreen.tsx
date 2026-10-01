@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Github } from "lucide-react";
 import { api, User as ApiUser } from "../services/api";
 import { Field } from "../components/Field";
 import { GoogleIcon } from "../components/GoogleIcon";
@@ -7,6 +8,7 @@ import { BrandMark, BrandWord } from "../components/Brand";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+const GITHUB_OAUTH_URL = import.meta.env.VITE_GITHUB_OAUTH_URL as string | undefined;
 
 declare global {
   interface Window {
@@ -123,6 +125,14 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
     window.google.accounts.id.prompt();
   };
 
+  const handleGithubClick = () => {
+    if (GITHUB_OAUTH_URL) {
+      window.location.assign(GITHUB_OAUTH_URL);
+      return;
+    }
+    toast.info("La connexion GitHub sera disponible dès que le callback OAuth backend sera configuré.");
+  };
+
   const handleSubmit = async () => {
     if (!email || !password || (mode === "signup" && !name)) {
       setError("Please fill out all fields.");
@@ -161,18 +171,6 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
   return (
     <div className="tt-fade-up relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 py-12">
-      {/* Local brand glow decorations (the app shell already paints the mesh background) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div
-          className="absolute -left-32 -top-32 h-80 w-80 rounded-full opacity-70 blur-3xl"
-          style={{ background: "var(--blue-soft)" }}
-        />
-        <div
-          className="absolute -bottom-36 -right-28 h-80 w-80 rounded-full opacity-60 blur-3xl"
-          style={{ background: "var(--blue-soft)" }}
-        />
-      </div>
-
       <div className="absolute right-4 top-4 z-10">
         <ThemeToggle />
       </div>
@@ -249,6 +247,10 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                 {googleLoading ? "Signing in..." : "Continue with Google"}
               </button>
             )}
+
+            <button onClick={handleGithubClick} className="tt-btn tt-btn-ghost w-full gap-2 px-4 py-3 text-sm">
+              <Github size={17} /> Continuer avec GitHub
+            </button>
           </div>
         </div>
       </div>

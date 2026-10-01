@@ -17,6 +17,12 @@ import { AboutScreen } from "../pages/AboutScreen";
 import { CampusScreen } from "../pages/CampusScreen";
 import { AnnalsScreen } from "../pages/AnnalsScreen";
 import { CampusLifeScreen } from "../pages/CampusLifeScreen";
+import { PracticeScreen } from "../pages/PracticeScreen";
+import { ProjectsScreen } from "../pages/ProjectsScreen";
+import { PeopleScreen } from "../pages/PeopleScreen";
+import { OpportunitiesScreen } from "../pages/OpportunitiesScreen";
+import { DashboardScreen } from "../pages/DashboardScreen";
+import { AiScreen } from "../pages/AiScreen";
 
 function BootSpinner() {
   return (
@@ -106,7 +112,13 @@ export default function App() {
           }
         >
           <Route path="/feed" element={<FeedScreen />} />
+          <Route path="/dashboard" element={<DashboardScreen />} />
+          <Route path="/ai" element={<AiScreen />} />
           <Route path="/explore" element={<ExploreScreen />} />
+          <Route path="/practice" element={<PracticeScreen />} />
+          <Route path="/projects" element={<ProjectsScreen />} />
+          <Route path="/people" element={<PeopleScreen />} />
+          <Route path="/opportunities" element={<OpportunitiesScreen />} />
           <Route path="/content/:id" element={<ContentScreen />} />
           <Route path="/create" element={<CreateScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />

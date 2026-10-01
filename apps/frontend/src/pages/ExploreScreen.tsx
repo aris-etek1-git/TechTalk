@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Search, X, Users, Flame, GraduationCap } from "lucide-react";
+import { Search, X, Users, Flame, GraduationCap, Github, FileText, Play, Code2, ArrowUpRight } from "lucide-react";
 import { api, Campus } from "../services/api";
 import { ContentItem } from "../types/content";
 import { mapBackendContentToItem, formatCount } from "../lib/content";
@@ -16,6 +16,17 @@ const TABS: { id: ExploreTab; label: string }[] = [
   { id: "createurs", label: "Créateurs" },
   { id: "communautes", label: "Communautés" },
 ];
+
+const GRAPH_SEARCH = [
+  { kind: "GitHub", title: "TheAlgorithms / Graph", detail: "Implémentations d'algorithmes de graphes en plusieurs langages.", meta: "Python · C++ · 12.4k stars", icon: Github, href: "https://github.com/TheAlgorithms" },
+  { kind: "LeetCode", title: "Graph Valid Tree", detail: "Détecter les cycles et vérifier la structure d'un graphe non orienté.", meta: "Medium · Union Find", icon: Code2, href: "https://leetcode.com/problems/graph-valid-tree/" },
+  { kind: "Vidéo", title: "Graph Theory in One Hour", detail: "Parcours, représentations, BFS et DFS pour construire les fondations.", meta: "YouTube · 48 min", icon: Play, href: "https://www.youtube.com/results?search_query=graph+theory+bfs+dfs" },
+  { kind: "PDF", title: "Introduction aux graphes", detail: "Notes de cours sur les parcours, les arbres et les graphes pondérés.", meta: "PDF · 32 pages", icon: FileText, href: "https://cp-algorithms.com/graph/breadth-first-search.html" },
+];
+
+function isGraphQuery(query: string): boolean {
+  return /graph|bfs|dfs|dijkstra|algorithme/i.test(query);
+}
 
 export function ExploreScreen() {
   const [params, setParams] = useSearchParams();
@@ -169,6 +180,28 @@ export function ExploreScreen() {
         )}
 
         <h1 className="text-[17px] font-extrabold tracking-tight mt-4 mb-4">{heading}</h1>
+
+        {q && isGraphQuery(q) && (
+          <section className="mb-6 tt-card border-accent/30 p-5">
+            <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="tt-label text-accent">Recherche augmentée</p>
+                <h2 className="mt-2 text-xl font-extrabold">Construire un chemin autour de « {q} »</h2>
+              </div>
+              <span className="text-xs text-muted-foreground">4 types de ressources</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {GRAPH_SEARCH.map(({ kind, title, detail, meta, icon: Icon, href }) => (
+                <a key={title} href={href} target="_blank" rel="noreferrer" className="group border border-border p-4 transition-colors hover:border-accent">
+                  <div className="flex items-start gap-3">
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center ${kind === "LeetCode" || kind === "Vidéo" ? "bg-primary text-white" : "bg-accent text-black"}`}><Icon size={16} /></span>
+                    <div className="min-w-0"><div className="flex items-center gap-2"><span className="tt-label">{kind}</span><ArrowUpRight size={12} className="text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></div><h3 className="mt-1 text-sm font-extrabold">{title}</h3><p className="mt-1 text-xs leading-relaxed text-muted-foreground">{detail}</p><p className="mt-3 text-[10px] font-semibold text-accent">{meta}</p></div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
 
         {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

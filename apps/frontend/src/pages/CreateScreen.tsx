@@ -19,6 +19,7 @@ function inferSource(url: string): string {
   if (u.includes("youtube.com") || u.includes("youtu.be")) return "YouTube";
   if (u.includes("reddit.com")) return "Reddit";
   if (u.includes("github.com")) return "GitHub";
+  if (u.includes("leetcode.com")) return "LeetCode";
   if (u.includes("twitter.com") || u.includes("x.com")) return "X";
   if (u.includes("dev.to")) return "Dev.to";
   if (u.includes("medium.com")) return "Medium";

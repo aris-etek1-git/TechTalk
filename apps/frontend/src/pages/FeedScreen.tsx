@@ -17,7 +17,7 @@ type LengthFilter = "long" | "short";
 const MODES: { id: FeedMode; label: string; icon: typeof Rows3 }[] = [
   { id: "flux", label: "Découverte", icon: Rows3 },
   { id: "videos", label: "YouTube", icon: LayoutGrid },
-  { id: "shorts", label: "TikTok", icon: Clapperboard },
+  { id: "shorts", label: "Vertical", icon: Clapperboard },
 ];
 
 function durationMinutes(item: ContentItem): number {
@@ -287,7 +287,7 @@ function FeedBar({
                 {active && (
                   <span
                     className="absolute bottom-[-13px] left-0 right-0 h-[3px] rounded-full"
-                    style={{ background: "linear-gradient(90deg, var(--blue-bright), var(--red))" }}
+                    style={{ background: "var(--red)" }}
                   />
                 )}
               </button>

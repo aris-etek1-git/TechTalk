@@ -6,6 +6,7 @@ import {
   Youtube,
   MessageCircle,
   Github,
+  Braces,
   Twitter,
   Layers,
   Sparkles,
@@ -46,8 +47,9 @@ const FEATURES = [
 const SOURCE_CHIPS = [
   { icon: Youtube, label: "YouTube", tint: "bg-primary text-white" },
   { icon: MessageCircle, label: "Reddit", tint: "bg-accent text-white" },
-  { icon: Twitter, label: "X", tint: "bg-blue-500 text-white" },
-  { icon: Github, label: "GitHub", tint: "bg-blue-700 text-white" },
+  { icon: Twitter, label: "X", tint: "bg-foreground text-white" },
+  { icon: Github, label: "GitHub", tint: "bg-foreground text-white" },
+  { icon: Braces, label: "LeetCode", tint: "bg-primary text-white" },
 ];
 
 const CORE_DIMENSIONS = ["Learn", "Practice", "Build", "Connect", "Campus", "Opportunities"];
@@ -151,8 +153,8 @@ export function LandingScreen() {
               <div className="absolute inset-x-6 bottom-6 h-[210px] rounded-2xl overflow-hidden border border-border shadow-2xl" style={{ background: "var(--surface)" }}>
                 <div className="h-7 flex items-center gap-1.5 px-3 border-b border-border/60">
                   <span className="w-2 h-2 rounded-full bg-red-400" />
-                  <span className="w-2 h-2 rounded-full bg-amber-400" />
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="w-2 h-2 rounded-full bg-white/60" />
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="tt-skeleton h-3 w-3/4" style={{ background: "var(--surface-2)" }} />
