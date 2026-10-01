@@ -15,9 +15,9 @@ type FeedMode = "flux" | "videos" | "shorts";
 type LengthFilter = "long" | "short";
 
 const MODES: { id: FeedMode; label: string; icon: typeof Rows3 }[] = [
-  { id: "flux", label: "Flux", icon: Rows3 },
-  { id: "videos", label: "Vidéos", icon: LayoutGrid },
-  { id: "shorts", label: "Shorts", icon: Clapperboard },
+  { id: "flux", label: "Découverte", icon: Rows3 },
+  { id: "videos", label: "YouTube", icon: LayoutGrid },
+  { id: "shorts", label: "TikTok", icon: Clapperboard },
 ];
 
 function durationMinutes(item: ContentItem): number {
@@ -287,7 +287,7 @@ function FeedBar({
                 {active && (
                   <span
                     className="absolute bottom-[-13px] left-0 right-0 h-[3px] rounded-full"
-                    style={{ background: id === "pour-toi" ? "var(--red)" : "var(--blue)" }}
+                    style={{ background: "linear-gradient(90deg, var(--blue-bright), var(--red))" }}
                   />
                 )}
               </button>
@@ -319,8 +319,8 @@ function FeedBar({
         <div className="mt-4 flex items-center gap-2">
           {(
             [
-              { id: "long" as const, label: "Vidéos longues" },
-              { id: "short" as const, label: "Vidéos courtes" },
+              { id: "long" as const, label: "Format long" },
+              { id: "short" as const, label: "Format court" },
             ]
           ).map(({ id, label }) => (
             <button

@@ -44,11 +44,13 @@ const FEATURES = [
 ];
 
 const SOURCE_CHIPS = [
-  { icon: Youtube, label: "YouTube", tint: "bg-red-500 text-white" },
-  { icon: MessageCircle, label: "Reddit", tint: "bg-orange-500 text-white" },
-  { icon: Twitter, label: "X", tint: "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" },
-  { icon: Github, label: "GitHub", tint: "bg-neutral-800 text-white dark:bg-neutral-200 dark:text-black" },
+  { icon: Youtube, label: "YouTube", tint: "bg-primary text-white" },
+  { icon: MessageCircle, label: "Reddit", tint: "bg-accent text-white" },
+  { icon: Twitter, label: "X", tint: "bg-blue-500 text-white" },
+  { icon: Github, label: "GitHub", tint: "bg-blue-700 text-white" },
 ];
+
+const CORE_DIMENSIONS = ["Learn", "Practice", "Build", "Connect", "Campus", "Opportunities"];
 
 export function LandingScreen() {
   const navigate = useNavigate();
@@ -115,6 +117,13 @@ export function LandingScreen() {
               Des vidéos, des tutos, des extraits de conférences et bien encore — le tout
               agrégé depuis YouTube, Reddit et d'autres sources.
             </p>
+            <div className="mb-7 flex flex-wrap gap-2">
+              {CORE_DIMENSIONS.map((item) => (
+                <span key={item} className="tt-chip">
+                  {item}
+                </span>
+              ))}
+            </div>
             <div className="flex flex-wrap items-center gap-3">
               <Link to={loggedIn ? "/feed" : "/login"} className="tt-btn tt-btn-brand px-6 py-3 text-sm gap-2">
                 Commencer <ArrowRight size={15} />
