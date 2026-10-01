@@ -40,11 +40,11 @@ const CAMPUS_ITEMS = [
 ];
 
 const SOURCES = [
-  { label: "YouTube", value: "YouTube", icon: Youtube, tint: "text-red-500" },
-  { label: "Reddit", value: "Reddit", icon: MessageCircle, tint: "text-orange-500" },
-  { label: "Dev.to", value: "Dev.to", icon: Code2, tint: "text-slate-400" },
-  { label: "TechCrunch", value: "TechCrunch", icon: Newspaper, tint: "text-lime-500" },
-  { label: "Medium", value: "Medium", icon: BookText, tint: "text-emerald-500" },
+  { label: "YouTube", value: "YouTube", icon: Youtube, tint: "text-primary" },
+  { label: "Reddit", value: "Reddit", icon: MessageCircle, tint: "text-accent" },
+  { label: "Dev.to", value: "Dev.to", icon: Code2, tint: "text-blue-400" },
+  { label: "TechCrunch", value: "TechCrunch", icon: Newspaper, tint: "text-blue-500" },
+  { label: "Medium", value: "Medium", icon: BookText, tint: "text-blue-300" },
 ];
 
 function SidebarLink({
@@ -53,7 +53,6 @@ function SidebarLink({
   icon: Icon,
   tint,
   size = 19,
-  hue = "orange",
   onNavigate,
 }: {
   to: string;
@@ -61,7 +60,6 @@ function SidebarLink({
   icon: typeof Home;
   tint?: string;
   size?: number;
-  hue?: "orange" | "blue";
   onNavigate?: () => void;
 }) {
   const { pathname, search } = useLocation();
@@ -74,9 +72,7 @@ function SidebarLink({
       className={[
         "tt-btn gap-3 px-3 py-2.5 justify-start text-sm",
         active
-          ? hue === "blue"
-            ? "bg-accent/12 text-accent font-bold"
-            : "bg-primary/12 text-primary font-bold"
+          ? "bg-accent/12 text-accent font-bold ring-1 ring-primary/20"
           : "text-muted-foreground hover:text-foreground hover:bg-surface-2",
       ].join(" ")}
     >
@@ -99,7 +95,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
         <div className="tt-divider-brand my-2" />
         {CAMPUS_ITEMS.map((item) => (
-          <SidebarLink key={item.to} {...item} hue="blue" onNavigate={onNavigate} />
+          <SidebarLink key={item.to} {...item} onNavigate={onNavigate} />
         ))}
       </nav>
 
