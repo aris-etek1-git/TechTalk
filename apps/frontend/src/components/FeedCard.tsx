@@ -38,7 +38,7 @@ export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardPro
         onClick={onOpen}
       >
         {imgFailed ? (
-          <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--brand-gradient-soft)" }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--blue-soft)" }}>
             <Play size={28} className="text-muted-foreground/50" />
           </div>
         ) : (
@@ -96,7 +96,7 @@ export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardPro
           {(item.categories && item.categories.length > 0 ? item.categories : [item.category])
             .slice(0, 4)
             .map((tag) => (
-              <span key={tag} className="text-[11px] font-medium text-primary/90 bg-primary/8 px-2 py-0.5 rounded-full">
+              <span key={tag} className="text-[11px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
                 #{tag.toLowerCase().replace(/\s+/g, "")}
               </span>
             ))}

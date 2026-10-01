@@ -20,11 +20,11 @@ import { CampusLifeScreen } from "../pages/CampusLifeScreen";
 
 function BootSpinner() {
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center gap-4 tt-shell">
-      <span className="tt-brand-tile w-12 h-12 rounded-2xl tt-pop">
+    <div className="min-h-dvh tt-shell flex flex-col items-center justify-center gap-5">
+      <span className="tt-logo-mark w-12 h-12 rounded-2xl tt-pop">
         <Rss size={20} />
       </span>
-      <div className="w-7 h-7 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <span className="w-28 h-[3px] rounded-full opacity-80" style={{ background: "var(--blue)" }} />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Rss,
   Search,
   Play,
   Youtube,
@@ -19,6 +18,7 @@ import { ContentItem } from "../types/content";
 import { mapBackendContentToItem } from "../lib/content";
 import { VideoTile } from "../components/VideoTile";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { Brand } from "../components/Brand";
 
 const FEATURES = [
   {
@@ -66,15 +66,10 @@ export function LandingScreen() {
   return (
     <div className="min-h-dvh tt-shell flex flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-40 tt-glass-strong border-b border-border/60">
+      <header className="sticky top-0 z-40 tt-glass-strong border-b border-glass-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="tt-brand-tile w-8 h-8 rounded-xl">
-              <Rss size={15} />
-            </span>
-            <span className="text-[19px] font-extrabold tracking-tight">
-              Tech<span className="tt-gradient-text">Talk</span>
-            </span>
+            <Brand size={32} />
           </Link>
           <nav className="hidden md:flex items-center gap-1 ml-6 text-sm text-muted-foreground">
             <Link to="/" className="tt-btn px-3 py-1.5 text-foreground font-semibold">Accueil</Link>
@@ -113,7 +108,7 @@ export function LandingScreen() {
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.1] mb-5">
               La plateforme vidéo
               <br />
-              des <span className="tt-gradient-text">développeurs</span>
+              des <span className="tt-accent-blue">développeurs</span>
             </h1>
             <p className="text-[15px] text-muted-foreground leading-relaxed mb-7 max-w-md">
               Découvrez, apprenez et partagez autour du code, de la tech et de l'IA.
@@ -124,7 +119,7 @@ export function LandingScreen() {
               <Link to={loggedIn ? "/feed" : "/login"} className="tt-btn tt-btn-brand px-6 py-3 text-sm gap-2">
                 Commencer <ArrowRight size={15} />
               </Link>
-              <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn tt-btn-ghost px-6 py-3 text-sm gap-2">
+              <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn tt-btn-blue px-6 py-3 text-sm gap-2">
                 <Search size={15} /> Explorer
               </Link>
             </div>
@@ -154,7 +149,7 @@ export function LandingScreen() {
                   <div className="tt-skeleton h-3 w-3/4" style={{ background: "var(--surface-2)" }} />
                   <div className="tt-skeleton h-3 w-full" style={{ background: "var(--surface-2)" }} />
                   <div className="tt-skeleton h-3 w-2/3" style={{ background: "var(--surface-2)" }} />
-                  <div className="mt-4 aspect-[16/9] rounded-xl flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
+                  <div className="mt-4 aspect-[16/9] rounded-xl flex items-center justify-center" style={{ background: "var(--sheen-flat), var(--blue)" }}>
                     <Play size={30} className="text-white fill-white ml-1" />
                   </div>
                 </div>
@@ -213,13 +208,8 @@ export function LandingScreen() {
       <footer className="border-t border-border/60 mt-10">
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="tt-brand-tile w-7 h-7 rounded-lg">
-              <Rss size={13} />
-            </span>
+            <Brand size={28} radius="10px" glyph={13} />
             <div>
-              <p className="text-[15px] font-extrabold leading-none">
-                Tech<span className="tt-gradient-text">Talk</span>
-              </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">Apprends. Explore. Progresse.</p>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { ArrowLeft, Rss, Bookmark, Search, User } from "lucide-react";
+import { BrandMark, BrandWord } from "../components/Brand";
 
 interface AboutScreenProps {
   onBack: () => void;
@@ -30,12 +31,12 @@ export function AboutScreen({ onBack }: AboutScreenProps) {
           <div
             aria-hidden
             className="pointer-events-none absolute -top-14 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-            style={{ background: "var(--brand-gradient-soft)" }}
+            style={{ background: "var(--blue-soft)" }}
           />
-          <div className="tt-brand-tile relative mb-4 h-16 w-16 rounded-2xl">
-            <Rss size={24} className="text-white" />
+          <BrandMark size={64} radius="16px" glyph={26} />
+          <div className="mt-4">
+            <BrandWord size="text-xl" />
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-foreground">TechTalk</h2>
         </div>
 
         {/* About */}

@@ -19,9 +19,9 @@ import {
   Newspaper,
   BookText,
   Layers,
-  Rss,
 } from "lucide-react";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { Brand } from "../components/Brand";
 import { useAppStore } from "./store";
 import { SIDEBAR_CATEGORIES } from "../lib/content";
 
@@ -53,6 +53,7 @@ function SidebarLink({
   icon: Icon,
   tint,
   size = 19,
+  hue = "orange",
   onNavigate,
 }: {
   to: string;
@@ -60,6 +61,7 @@ function SidebarLink({
   icon: typeof Home;
   tint?: string;
   size?: number;
+  hue?: "orange" | "blue";
   onNavigate?: () => void;
 }) {
   const { pathname, search } = useLocation();
@@ -72,7 +74,9 @@ function SidebarLink({
       className={[
         "tt-btn gap-3 px-3 py-2.5 justify-start text-sm",
         active
-          ? "bg-primary/10 text-primary font-bold"
+          ? hue === "blue"
+            ? "bg-accent/12 text-accent font-bold"
+            : "bg-primary/12 text-primary font-bold"
           : "text-muted-foreground hover:text-foreground hover:bg-surface-2",
       ].join(" ")}
     >
@@ -86,17 +90,16 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex flex-col gap-6 px-3 py-5 h-full overflow-y-auto tt-scrollbar">
       <Link to="/feed" onClick={onNavigate} className="flex items-center gap-2.5 px-2">
-        <span className="tt-brand-tile w-8 h-8 rounded-xl flex-shrink-0">
-          <Rss size={15} />
-        </span>
-        <span className="text-[19px] font-extrabold tracking-tight">
-          Tech<span className="tt-gradient-text">Talk</span>
-        </span>
+        <Brand size={32} />
       </Link>
 
       <nav className="flex flex-col gap-0.5">
-        {[...NAV_ITEMS, ...CAMPUS_ITEMS].map((item) => (
+        {NAV_ITEMS.map((item) => (
           <SidebarLink key={item.to} {...item} onNavigate={onNavigate} />
+        ))}
+        <div className="tt-divider-brand my-2" />
+        {CAMPUS_ITEMS.map((item) => (
+          <SidebarLink key={item.to} {...item} hue="blue" onNavigate={onNavigate} />
         ))}
       </nav>
 
@@ -160,15 +163,15 @@ export function AppShell() {
   return (
     <div className="h-dvh tt-shell flex overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-60 flex-shrink-0 border-r border-border/60 bg-surface/60 backdrop-blur-xl">
+      <aside className="hidden lg:flex w-64 flex-shrink-0 border-r border-glass-border bg-sidebar backdrop-blur-2xl">
         <SidebarContent />
       </aside>
 
       {/* Mobile drawer */}
       {drawerOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setDrawerOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 bg-surface border-r border-border shadow-2xl">
+          <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-72 border-r border-glass-border bg-sidebar shadow-2xl backdrop-blur-2xl">
             <button
               onClick={() => setDrawerOpen(false)}
               className="tt-btn absolute top-3 right-2 p-2 text-muted-foreground"
@@ -183,7 +186,7 @@ export function AppShell() {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="z-40 flex-shrink-0 tt-glass-strong border-b border-border/60">
+        <header className="z-40 flex-shrink-0 tt-glass-strong border-b border-glass-border">
           <div className="px-3 md:px-5 h-14 flex items-center gap-2">
             <button
               onClick={() => setDrawerOpen(true)}
@@ -192,6 +195,10 @@ export function AppShell() {
             >
               <Menu size={20} />
             </button>
+
+            <Link to="/feed" className="lg:hidden flex items-center gap-2 mr-1">
+              <Brand size={28} radius="10px" glyph={13} />
+            </Link>
 
             <form onSubmit={submitSearch} className="relative flex-1 max-w-xl">
               <input

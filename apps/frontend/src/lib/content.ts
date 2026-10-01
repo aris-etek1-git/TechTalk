@@ -116,6 +116,7 @@ export function mapBackendContentToItem(c: any): ContentItem {
     comments,
     views,
     embedCode: c.embedCode,
+    youtubeId: youtubeId || undefined,
   };
 }
 

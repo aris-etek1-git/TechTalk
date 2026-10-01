@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Rss, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { ALL_INTERESTS, saveInterests } from "../lib/content";
 import { loadInterests } from "../lib/content";
+import { Brand } from "../components/Brand";
 
 export function OnboardingScreen() {
   const navigate = useNavigate();
@@ -21,12 +22,7 @@ export function OnboardingScreen() {
     <div className="min-h-dvh tt-shell flex items-center justify-center px-4">
       <div className="w-full max-w-lg tt-card p-8 tt-fade-up">
         <div className="flex items-center gap-2.5 mb-6">
-          <span className="tt-brand-tile w-9 h-9 rounded-xl">
-            <Rss size={16} />
-          </span>
-          <span className="text-lg font-extrabold tracking-tight">
-            Tech<span className="tt-gradient-text">Talk</span>
-          </span>
+          <Brand size={36} radius="12px" glyph={17} wordSize="text-lg" />
         </div>
 
         <span className="tt-chip mb-3">

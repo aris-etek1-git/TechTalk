@@ -290,7 +290,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                           {group.campus?.name ?? "campus"} · {group.memberCount} members
                         </p>
                       </div>
-                      <span className="inline-flex shrink-0 items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                      <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
                         {group.myRole}
                       </span>
                     </div>
@@ -408,7 +408,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                       <span
                         aria-hidden="true"
                         className="mt-0.5 w-1 shrink-0 self-stretch rounded-full"
-                        style={{ background: "var(--brand-gradient)" }}
+                        style={{ background: "var(--blue)" }}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-3">
@@ -482,7 +482,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                         {event.campus?.name ?? "campus"} · {formatWhen(event.startsAt)}
                       </p>
                     </div>
-                    <span className="inline-flex shrink-0 items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                    <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
                       {event.myRsvp ?? (event.createdBy === userId ? "hosting" : "—")}
                     </span>
                   </div>

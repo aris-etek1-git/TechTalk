@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Rss } from "lucide-react";
 import { toast } from "sonner";
 import { api, User as ApiUser } from "../services/api";
 import { Field } from "../components/Field";
 import { GoogleIcon } from "../components/GoogleIcon";
+import { BrandMark, BrandWord } from "../components/Brand";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
@@ -165,11 +165,11 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div
           className="absolute -left-32 -top-32 h-80 w-80 rounded-full opacity-70 blur-3xl"
-          style={{ background: "var(--brand-gradient-soft)" }}
+          style={{ background: "var(--blue-soft)" }}
         />
         <div
           className="absolute -bottom-36 -right-28 h-80 w-80 rounded-full opacity-60 blur-3xl"
-          style={{ background: "var(--brand-gradient-soft)" }}
+          style={{ background: "var(--blue-soft)" }}
         />
       </div>
 
@@ -180,13 +180,11 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
       {/* Wordmark */}
       <div className="relative mb-12 text-center">
         <div className="mb-4 flex items-center justify-center gap-3">
-          <div className="tt-brand-tile h-12 w-12 rounded-2xl">
-            <Rss size={20} className="text-white" />
-          </div>
-          <span className="text-3xl font-bold tracking-tight text-foreground">TechTalk</span>
+          <BrandMark size={48} radius="14px" glyph={22} />
+          <BrandWord size="text-3xl" />
         </div>
         <p className="text-sm text-muted-foreground">
-          TikTok for tech — discover, scroll, learn.
+          Découvre, scrolle, apprends.
         </p>
       </div>
 

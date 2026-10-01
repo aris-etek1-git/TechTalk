@@ -22,4 +22,5 @@ export interface ContentItem {
   comments: number;
   views: number;
   embedCode?: string | null;
+  youtubeId?: string;
 }

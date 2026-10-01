@@ -216,7 +216,7 @@ export function ContentScreen() {
             </div>
             <button
               onClick={() => toast.info("Les abonnements aux créateurs arrivent bientôt !")}
-              className="tt-btn tt-btn-brand px-5 py-2 text-sm flex-shrink-0 gap-1.5"
+              className="tt-btn tt-btn-blue px-5 py-2 text-sm flex-shrink-0 gap-1.5"
             >
               <Plus size={14} /> S'abonner
             </button>
@@ -257,7 +257,7 @@ export function ContentScreen() {
             </button>
             <div className="flex flex-wrap gap-1.5 mt-3">
               {(item.categories && item.categories.length > 0 ? item.categories : [item.category]).map((tag) => (
-                <span key={tag} className="text-[11px] font-medium text-primary/90 bg-primary/8 px-2 py-0.5 rounded-full">
+                <span key={tag} className="text-[11px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
                   #{tag.toLowerCase().replace(/\s+/g, "")}
                 </span>
               ))}

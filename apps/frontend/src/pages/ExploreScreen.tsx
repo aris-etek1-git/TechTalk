@@ -150,7 +150,7 @@ export function ExploreScreen() {
               <button key={t.id} onClick={() => setTab(t.id)} className="tt-btn relative px-1 pb-2.5 text-sm">
                 <span className={active ? "text-foreground font-bold" : "text-muted-foreground font-medium"}>{t.label}</span>
                 {active && (
-                  <span className="absolute bottom-[-1px] left-0 right-0 h-[3px] rounded-full" style={{ background: "var(--brand-gradient)" }} />
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-[3px] rounded-full" style={{ background: "var(--blue)" }} />
                 )}
               </button>
             );
