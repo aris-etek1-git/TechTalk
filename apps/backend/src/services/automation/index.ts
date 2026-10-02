@@ -3,6 +3,7 @@ import { fetchLiveDevToArticles } from './devto.provider.js';
 import { fetchLiveYouTubeVideos } from './youtube.provider.js';
 import { fetchLiveRedditPosts } from './reddit.provider.js';
 import { backfillMissingBodies } from './backfill.provider.js';
+import { rebuildTagUsageCounts, tagUntaggedContents } from '../taxonomy.js';
 
 /**
  * Orchestrates and executes all data fetching providers sequentially
@@ -14,6 +15,14 @@ async function runAllAutomationProviders(): Promise<void> {
   await fetchLiveYouTubeVideos();
   await fetchLiveRedditPosts();
   await backfillMissingBodies();
+
+  // Providers write their own labels; anything that arrived untagged is caught
+  // here, so tags never depend on a provider remembering to call the service.
+  const tagged = await tagUntaggedContents();
+  if (tagged > 0) {
+    await rebuildTagUsageCounts();
+    console.log(`[Automation Engine] Tagged ${tagged} contents.`);
+  }
   
   console.log('[Automation Engine] All sync tasks successfully finished.');
 }

@@ -11,7 +11,9 @@
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
     "db:push": "drizzle-kit push --config=drizzle.config.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "tags:catalog": "tsx -r dotenv/config src/scripts/tag-catalog.ts",
+    "tags:backfill": "tsx -r dotenv/config src/scripts/tag-catalog.ts --write"
   },
   "keywords": [
     "fastify",

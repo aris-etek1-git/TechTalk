@@ -32,7 +32,7 @@ function currentUser(request: FastifyRequest): UserPayload | null {
   return user?.id ? user : null;
 }
 
-function isPlatformAdmin(request: FastifyRequest): boolean {
+export function isPlatformAdmin(request: FastifyRequest): boolean {
   return currentUser(request)?.role === 'admin';
 }
 

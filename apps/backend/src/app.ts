@@ -13,6 +13,10 @@ import { courseRoutes } from './routes/course.routes.js';
 import { documentRoutes } from './routes/document.routes.js';
 import { groupRoutes } from './routes/group.routes.js';
 import { eventRoutes } from './routes/event.routes.js';
+import { tagRoutes } from './routes/tag.routes.js';
+import { userRoutes } from './routes/user.routes.js';
+import { interactionRoutes } from './routes/interaction.routes.js';
+import { feedRoutes } from './routes/feed.routes.js';
 import { requireCampusRole, requireCampusVisible } from './plugins/campus-access.js';
 import type { CampusRole } from './plugins/campus-access.js';
 
@@ -72,6 +76,10 @@ export async function createApp(): Promise<FastifyInstance> {
   fastify.register(documentRoutes, { prefix: '/api/documents' });
   fastify.register(groupRoutes, { prefix: '/api/groups' });
   fastify.register(eventRoutes, { prefix: '/api/events' });
+  fastify.register(tagRoutes, { prefix: '/api/tags' });
+  fastify.register(userRoutes, { prefix: '/api/users' });
+  fastify.register(interactionRoutes, { prefix: '/api/interactions' });
+  fastify.register(feedRoutes, { prefix: '/api/feed' });
 
   fastify.get('/api/health', async () => {
     return { status: 'OK', message: 'TechTalk API is running smoothly' };

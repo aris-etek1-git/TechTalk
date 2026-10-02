@@ -3,7 +3,7 @@ import { and, asc, count, eq, gte, inArray, lt } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db/db.js';
 import { campuses, eventRsvps, events, groups, users } from '../db/schema.js';
-import { CAMPUS_ROLE_RANK, loadAccessForCampus, loadCampusAccess } from '../plugins/campus-access.js';
+import { CAMPUS_ROLE_RANK, isPlatformAdmin, loadAccessForCampus, loadCampusAccess } from '../plugins/campus-access.js';
 
 const campusParam = z.object({ campusId: z.string().uuid() });
 const eventIdParam = z.object({ eventId: z.string().uuid() });
@@ -58,12 +58,29 @@ function currentUserId(request: FastifyRequest): string {
   return (request.user as { id: string }).id;
 }
 
-async function resolveEvent(request: FastifyRequest, eventId: string) {
+interface EventScope {
+  event: typeof events.$inferSelect;
+  rank: number;
+  isPlatformAdmin: boolean;
+}
+
+/**
+ * Load an event with the caller's standing over whatever gates it. A campus
+ * event needs membership; a school-wide or TechTalk-published one (§44) has no
+ * campus row to check, so any signed-in user may read and RSVP to it.
+ */
+async function resolveEvent(request: FastifyRequest, eventId: string): Promise<EventScope | null> {
   const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
   if (!event) return null;
+
+  if (!event.campusId) {
+    return { event, rank: CAMPUS_ROLE_RANK.member, isPlatformAdmin: isPlatformAdmin(request) };
+  }
+
   const access = await loadAccessForCampus(request, event.campusId);
+  // A missing campus row makes the event unreachable, not public.
   if (!access) return null;
-  return { event, access };
+  return { event, rank: access.rank, isPlatformAdmin: access.isPlatformAdmin };
 }
 
 function canManageEvent(event: typeof events.$inferSelect, rank: number, isPlatformAdmin: boolean, userId: string) {
@@ -182,7 +199,7 @@ export async function handleGetEvent(request: FastifyRequest, reply: FastifyRepl
 
     const resolved = await resolveEvent(request, parsedParams.data.eventId);
     if (!resolved) return reply.status(404).send({ error: 'Event not found.' });
-    if (resolved.access.rank < CAMPUS_ROLE_RANK.member) {
+    if (resolved.rank < CAMPUS_ROLE_RANK.member) {
       return reply.status(403).send({ error: 'Forbidden', message: 'Join the campus first.' });
     }
 
@@ -262,7 +279,7 @@ export async function handleUpdateEvent(request: FastifyRequest, reply: FastifyR
     if (!resolved) return reply.status(404).send({ error: 'Event not found.' });
 
     const userId = currentUserId(request);
-    if (!canManageEvent(resolved.event, resolved.access.rank, resolved.access.isPlatformAdmin, userId)) {
+    if (!canManageEvent(resolved.event, resolved.rank, resolved.isPlatformAdmin, userId)) {
       return reply.status(403).send({ error: 'Forbidden', message: 'Organizers and campus moderators only.' });
     }
 
@@ -302,7 +319,7 @@ export async function handleRsvpEvent(request: FastifyRequest, reply: FastifyRep
 
     const resolved = await resolveEvent(request, parsedParams.data.eventId);
     if (!resolved) return reply.status(404).send({ error: 'Event not found.' });
-    if (resolved.access.rank < CAMPUS_ROLE_RANK.member) {
+    if (resolved.rank < CAMPUS_ROLE_RANK.member) {
       return reply.status(403).send({ error: 'Forbidden', message: 'Join the campus first.' });
     }
     if (resolved.event.status === 'cancelled') {
@@ -380,7 +397,7 @@ export async function handleDeleteEvent(request: FastifyRequest, reply: FastifyR
     if (!resolved) return reply.status(404).send({ error: 'Event not found.' });
 
     const userId = currentUserId(request);
-    if (!canManageEvent(resolved.event, resolved.access.rank, resolved.access.isPlatformAdmin, userId)) {
+    if (!canManageEvent(resolved.event, resolved.rank, resolved.isPlatformAdmin, userId)) {
       return reply.status(403).send({ error: 'Forbidden', message: 'Organizers and campus moderators only.' });
     }
 
