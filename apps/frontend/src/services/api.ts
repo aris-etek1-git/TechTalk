@@ -66,6 +66,117 @@ export interface Course {
 
 export type DocumentStatus = 'pending' | 'approved' | 'rejected';
 
+export type TagKind = 'topic' | 'skill' | 'language' | 'tool';
+
+export interface TagRef {
+  id: string;
+  slug: string;
+  name: string;
+  kind: TagKind;
+  usageCount?: number;
+}
+
+/** One item of /api/feed: the content plus why the ranker placed it here. */
+export interface FeedItem extends Content {
+  author: string | null;
+  publishedAt: string | null;
+  tags: TagRef[];
+  score: number;
+  reasons: string[];
+  liked: boolean;
+  saved: boolean;
+  seen: boolean;
+  matched: boolean;
+  matchedTags: string[];
+}
+
+export interface FeedPage {
+  items: FeedItem[];
+  nextCursor: string | null;
+  strategy: string;
+}
+
+/** §13 / §80 — the append-only behaviour log the backend accepts. */
+export type InteractionType =
+  | 'view'
+  | 'like'
+  | 'unlike'
+  | 'save'
+  | 'unsave'
+  | 'share'
+  | 'click'
+  | 'skip'
+  | 'open_external';
+
+export type InteractionSurface =
+  | 'feed'
+  | 'shorts'
+  | 'search'
+  | 'explore'
+  | 'content'
+  | 'topic'
+  | 'push';
+
+export interface InteractionInput {
+  contentId: string;
+  type: InteractionType;
+  surface?: InteractionSurface;
+  context?: Record<string, string | number | boolean>;
+}
+
+export interface InteractionSummary {
+  days: number;
+  totals: { type: InteractionType; count: number }[];
+  topTags: { slug: string; name: string; count: number }[];
+}
+
+export interface SearchResults {
+  query: string;
+  contents: Content[];
+  tags: { id: string; slug: string; name: string; kind: TagKind; usageCount: number }[];
+  projects: Project[];
+}
+
+export interface InterestTag {
+  id: string;
+  slug: string;
+  name: string;
+  kind: TagKind;
+}
+
+export type ProfileVisibility = 'public' | 'private' | 'school_only';
+
+export type UserLevel = (typeof USER_LEVELS)[number];
+export const USER_LEVELS = ['beginner', 'intermediate', 'advanced', 'professional'] as const;
+
+export type ProjectStatus = 'idea' | 'planned' | 'in_progress' | 'completed' | 'abandoned';
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string | null;
+  technologies: string[];
+  repositoryUrl: string | null;
+  demoUrl: string | null;
+  status: ProjectStatus;
+  createdAt: string;
+  owner: { id: string; name: string; picture: string | null };
+}
+
+export interface MyProfilePayload {
+  profile: {
+    bio: string | null;
+    level: UserLevel;
+    learningGoals: string[];
+    preferredLanguages: string[];
+    visibility: ProfileVisibility;
+    onboardedAt: string | null;
+  } | null;
+  user: { id: string; name: string; email: string; username: string | null; picture: string | null } | null;
+  interests: InterestTag[];
+  settings: Record<string, unknown>;
+}
+
 export interface GroupMember {
   userId: string;
   role: 'member' | 'host';
@@ -292,6 +403,22 @@ export const api = {
     } catch (err: any) {
       return { success: false, error: err.message || 'Erreur réseau' };
     }
+  },
+
+  /** §49 OAuth: the browser is handed to the backend, which redirects to GitHub. */
+  githubStartUrl(): string {
+    return `${API_URL}/auth/github`;
+  },
+
+  /** The callback returns the JWT in the URL fragment; adopt it, then load /me. */
+  async adoptGithubToken(token: string): Promise<{ success: boolean; user?: User; error?: string }> {
+    this.setToken(token);
+    const me = await this.getMe();
+    if (!me.success) {
+      this.logout();
+      return { success: false, error: me.error || 'Échec de la connexion GitHub' };
+    }
+    return { success: true, user: me.user };
   },
 
   async updateProfile(name: string): Promise<{ success: boolean; user?: User; error?: string }> {
@@ -825,5 +952,215 @@ export const api = {
     } catch (err: any) {
       return { success: false, error: err.message || 'Erreur réseau' };
     }
+  },
+
+  /* ------------------------------------------------------------------
+     Discovery: taxonomy (§9), personalized feed (§10/§11), profile
+     (§14-§17) and the behaviour log (§13/§80).
+  ------------------------------------------------------------------ */
+
+  async getFeed(options: {
+    limit?: number;
+    cursor?: string;
+    type?: 'article' | 'video' | 'social_post';
+    source?: string;
+    shape?: 'short' | 'long';
+    match?: 'all' | 'interests';
+  } = {}): Promise<FeedPage> {
+    const params = new URLSearchParams();
+    if (options.limit) params.set('limit', String(options.limit));
+    if (options.cursor) params.set('cursor', options.cursor);
+    if (options.type) params.set('type', options.type);
+    if (options.source) params.set('source', options.source);
+    if (options.shape) params.set('shape', options.shape);
+    if (options.match) params.set('match', options.match);
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/feed${query ? `?${query}` : ''}`);
+    if (!response.ok) throw new Error('feed_unavailable');
+    const data = await response.json();
+    return {
+      items: Array.isArray(data.items) ? data.items : [],
+      nextCursor: data.nextCursor ?? null,
+      strategy: String(data.strategy ?? 'hybrid'),
+    };
+  },
+
+  async getContent(contentId: string): Promise<{ content: Content; tags: TagRef[] }> {
+    const response = await this.fetchWithAuth(`/content/${contentId}`);
+    if (!response.ok) throw new Error('content_unavailable');
+    const data = await response.json();
+    return { content: data.content, tags: Array.isArray(data.tags) ? data.tags : [] };
+  },
+
+  async getTags(options: { kind?: TagKind; q?: string; limit?: number } = {}): Promise<TagRef[]> {
+    const params = new URLSearchParams();
+    if (options.kind) params.set('kind', options.kind);
+    if (options.q) params.set('q', options.q);
+    if (options.limit) params.set('limit', String(options.limit));
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/tags${query ? `?${query}` : ''}`);
+    if (!response.ok) throw new Error('tags_unavailable');
+    const data = await response.json();
+    return Array.isArray(data.tags) ? data.tags : [];
+  },
+
+  async getTagContents(slug: string, options: { limit?: number; offset?: number } = {}): Promise<{ tag: TagRef; contents: Content[]; total: number }> {
+    const params = new URLSearchParams();
+    if (options.limit) params.set('limit', String(options.limit));
+    if (options.offset) params.set('offset', String(options.offset));
+    const response = await this.fetchWithAuth(`/tags/${encodeURIComponent(slug)}/contents?${params}`);
+    if (!response.ok) throw new Error('tag_unavailable');
+    const data = await response.json();
+    return { tag: data.tag, contents: Array.isArray(data.contents) ? data.contents : [], total: Number(data.total ?? 0) };
+  },
+
+  /** Public projects only (§48): a student's work is invisible until they publish it. */
+  async getProjects(options: { limit?: number; q?: string; status?: ProjectStatus } = {}): Promise<Project[]> {
+    const params = new URLSearchParams();
+    if (options.limit) params.set('limit', String(options.limit));
+    if (options.q) params.set('q', options.q);
+    if (options.status) params.set('status', options.status);
+    const query = params.toString();
+
+    const response = await this.fetchWithAuth(`/projects${query ? `?${query}` : ''}`);
+    if (!response.ok) throw new Error('projects_unavailable');
+    const data = await response.json();
+    return Array.isArray(data.projects) ? data.projects : [];
+  },
+
+  /** §35 / §56: one query across contents, tags and public projects. */
+  async search(q: string, limit = 8): Promise<SearchResults> {
+    const params = new URLSearchParams({ q, limit: String(limit) });
+    const response = await this.fetchWithAuth(`/search?${params}`);
+    if (!response.ok) throw new Error('search_unavailable');
+    const data = await response.json();
+    return {
+      query: data.query ?? q,
+      contents: Array.isArray(data.contents) ? data.contents : [],
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      projects: Array.isArray(data.projects) ? data.projects : [],
+    };
+  },
+
+  async getMyProfile(): Promise<MyProfilePayload> {
+    const response = await this.fetchWithAuth('/users/me/profile');
+    if (!response.ok) throw new Error('profile_unavailable');
+    const data = await response.json();
+    return {
+      profile: data.profile ?? null,
+      user: data.user ?? null,
+      interests: Array.isArray(data.interests) ? data.interests : [],
+      settings: data.settings && typeof data.settings === 'object' ? data.settings : {},
+    };
+  },
+
+  async updateMyProfile(patch: {
+    username?: string;
+    bio?: string | null;
+    level?: UserLevel;
+    learningGoals?: string[];
+    preferredLanguages?: string[];
+    visibility?: ProfileVisibility;
+  }): Promise<{ success: boolean; error?: string; message?: string }> {
+    try {
+      const response = await this.fetchWithAuth('/users/me/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      const data = await response.json();
+      if (!response.ok) return { success: false, error: data.message || data.error || 'Impossible de enregistrer le profil' };
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erreur réseau' };
+    }
+  },
+
+  async getMyInterests(): Promise<InterestTag[]> {
+    const response = await this.fetchWithAuth('/users/me/interests');
+    if (!response.ok) throw new Error('interests_unavailable');
+    const data = await response.json();
+    return Array.isArray(data.tags) ? data.tags : [];
+  },
+
+  async saveMyInterests(slugs: string[]): Promise<{ success: boolean; error?: string; tags?: InterestTag[] }> {
+    try {
+      const response = await this.fetchWithAuth('/users/me/interests', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tags: slugs }),
+      });
+      const data = await response.json();
+      if (!response.ok) return { success: false, error: data.message || data.error || 'Centres d’intérêt non enregistrés' };
+      return { success: true, tags: Array.isArray(data.tags) ? data.tags : [] };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erreur réseau' };
+    }
+  },
+
+  async savePreferences(settings: Record<string, string | number | boolean | string[]>): Promise<boolean> {
+    try {
+      const response = await this.fetchWithAuth('/users/me/preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings }),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  /** §16: goals, interests and the "done" stamp travel in one request. */
+  async completeOnboarding(input: {
+    tags?: string[];
+    level?: UserLevel;
+    learningGoals?: string[];
+    preferredLanguages?: string[];
+    bio?: string;
+    username?: string;
+    skipped?: boolean;
+  }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth('/users/me/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      const data = await response.json();
+      if (!response.ok) return { success: false, error: data.message || data.error || 'Onboarding non enregistré' };
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erreur réseau' };
+    }
+  },
+
+  /** Fire-and-forget: telemetry must never block or fail what the user sees. */
+  async recordInteractions(items: InteractionInput[], options: { keepalive?: boolean } = {}): Promise<boolean> {
+    try {
+      const response = await this.fetchWithAuth('/interactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items }),
+        keepalive: options.keepalive ?? false,
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  /** §80: aggregated view of the user's own behaviour log over a window. */
+  async getInteractionSummary(days = 30): Promise<InteractionSummary> {
+    const response = await this.fetchWithAuth(`/interactions/summary?days=${days}`);
+    if (!response.ok) throw new Error('interaction_summary_unavailable');
+    const data = await response.json();
+    return {
+      days: data.days ?? days,
+      totals: Array.isArray(data.totals) ? data.totals : [],
+      topTags: Array.isArray(data.topTags) ? data.topTags : [],
+    };
   }
 };

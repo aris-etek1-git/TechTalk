@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   User as UserIcon,
@@ -14,9 +14,9 @@ import {
   Moon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "../services/api";
+import { api, TagRef } from "../services/api";
 import { ContentItem } from "../types/content";
-import { mapBackendContentToItem, ALL_INTERESTS } from "../lib/content";
+import { mapBackendContentToItem, groupTagsByKind } from "../lib/content";
 import { VideoTile } from "../components/VideoTile";
 import { useTheme, toggleTheme } from "../app/theme";
 import { useAppStore } from "../app/store";
@@ -35,13 +35,23 @@ export function ProfileScreen() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const theme = useTheme();
-  const { user, setUser, logout, saved, toggleSave, readIds, readDates, interests, toggleInterest } = useAppStore();
+  const { user, setUser, logout, saved, toggleSave, readIds, readDates, interestTags, interestSlugs, toggleInterest } = useAppStore();
 
   const section = (params.get("tab") as Section) || "profil";
   const [pool, setPool] = useState<ContentItem[]>([]);
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(user?.name || "");
   const [saving, setSaving] = useState(false);
+  const [catalog, setCatalog] = useState<TagRef[]>([]);
+
+  useEffect(() => {
+    api
+      .getTags({ limit: 60 })
+      .then(setCatalog)
+      .catch(() => setCatalog([]));
+  }, []);
+
+  const topicGroups = useMemo(() => groupTagsByKind(catalog), [catalog]);
 
   useEffect(() => {
     api
@@ -241,23 +251,35 @@ export function ProfileScreen() {
             <section>
               <h2 className="text-sm font-bold mb-1">Vos centres d'intérêt</h2>
               <p className="text-[13px] text-muted-foreground mb-4">
-                Ils personnalisent l'onglet « Abonnements » du flux et le classement « Pour toi ».
+                {interestTags.length > 0
+                  ? `${interestTags.length} sujet${interestTags.length > 1 ? "s" : "" } suivi${interestTags.length > 1 ? "s" : ""}. Ils personnalisent l'onglet « Abonnements » du flux et le classement « Pour toi ».`
+                  : "Aucun sujet suivi. Choisissez-en quelques-uns pour personnaliser votre flux."}
               </p>
-              <div className="tt-card p-5 flex flex-wrap gap-2">
-                {ALL_INTERESTS.map((tag) => {
-                  const active = interests.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => toggleInterest(tag)}
-                      className={`tt-chip transition-all ${
-                        active ? "text-primary ring-1 ring-primary/50 bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
+              <div className="tt-card space-y-5 p-5">
+                {catalog.length === 0 && (
+                  <p className="text-[13px] text-muted-foreground">Les sujets sont momentanément indisponibles.</p>
+                )}
+                {topicGroups.map((group) => (
+                  <div key={group.kind}>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{group.label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {group.tags.map((tag) => {
+                        const active = interestSlugs.includes(tag.slug);
+                        return (
+                          <button
+                            key={tag.id}
+                            onClick={() => toggleInterest(tag)}
+                            className={`tt-chip transition-all ${
+                              active ? "text-primary ring-1 ring-primary/50 bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                            }`}
+                          >
+                            {tag.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           )}

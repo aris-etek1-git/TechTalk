@@ -1,4 +1,4 @@
-import { ContentItem } from "../types/content";
+import { ContentItem, ContentTag } from "../types/content";
 
 const FALLBACK_IMAGES = [
   "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=500&fit=crop&auto=format",
@@ -144,46 +144,59 @@ export function mapBackendContentToItem(c: any): ContentItem {
 }
 
 /* ------------------------------------------------------------------
-   Rule-based ranking (no ML): tag match + popularity + freshness,
-   then a diversity pass that avoids consecutive same-category cards.
+   Feed items. Ranking, diversity and cursor pagination already happened
+   on the server (§10/§11/§57), so here a row is only normalized for
+   display and carries the reasons the ranker gave (§82).
 ------------------------------------------------------------------ */
-export function rankForUser(items: ContentItem[], interests: string[]): ContentItem[] {
-  const interestSet = new Set(interests.map((i) => i.toLowerCase()));
-
-  const scored = items.map((item) => {
-    let score = 0;
-    const tags = [item.category, ...(item.categories || [])].map((t) => t.toLowerCase());
-    const matches = tags.filter((t) =>
-      [...interestSet].some((i) => t.includes(i) || i.includes(t))
-    ).length;
-    score += matches * 40;
-    score += Math.log10(Math.max(1, item.likes)) * 12;
-    const ageDays = (Date.now() - new Date(item.publishedAt).getTime()) / 86_400_000;
-    score += Math.max(0, 30 - ageDays * 1.5);
-    return { item, score };
+export function mapFeedItemToItem(f: any): ContentItem {
+  const tags = Array.isArray(f.tags) ? f.tags : [];
+  const item = mapBackendContentToItem({
+    ...f,
+    authorName: f.author,
+    categories: tags.map((t: any) => String(t.name)).filter(Boolean),
   });
-
-  scored.sort((a, b) => b.score - a.score);
-
-  const out: ContentItem[] = [];
-  const pending = scored.map((s) => s.item);
-  while (pending.length > 0) {
-    let idx = pending.findIndex(
-      (p, i) => i === 0 || p.category !== out[out.length - 1]?.category
-    );
-    if (idx === -1) idx = 0;
-    out.push(...pending.splice(idx, 1));
-  }
-  return out;
+  return {
+    ...item,
+    tags,
+    reasons: Array.isArray(f.reasons) ? f.reasons : [],
+    matchedTags: Array.isArray(f.matchedTags) ? f.matchedTags : [],
+    seen: Boolean(f.seen),
+  };
 }
 
-export function matchesInterests(item: ContentItem, interests: string[]): boolean {
-  if (interests.length === 0) return false;
-  const tags = [item.category, ...(item.categories || [])].map((t) => t.toLowerCase());
-  return interests.some((i) => {
-    const l = i.toLowerCase();
-    return tags.some((t) => t.includes(l) || l.includes(t));
-  });
+export const TAG_KIND_LABELS: Record<ContentTag["kind"], string> = {
+  topic: "Sujets",
+  skill: "Compétences",
+  language: "Langages",
+  tool: "Outils",
+};
+
+export type TagGroups = { kind: ContentTag["kind"]; label: string; tags: ContentTag[] }[];
+
+/** The picker shows the dictionary grouped, never as one flat list of 40 chips. */
+export function groupTagsByKind(tags: ContentTag[]): TagGroups {
+  const order: ContentTag["kind"][] = ["topic", "skill", "language", "tool"];
+  return order
+    .map((kind) => ({ kind, label: TAG_KIND_LABELS[kind], tags: tags.filter((t) => t.kind === kind) }))
+    .filter((group) => group.tags.length > 0);
+}
+
+/* Interests live on the server now (§16). The cache only exists so a reload
+   paints the right chips before /users/me/interests answers. */
+const INTEREST_CACHE_KEY = "teachtalk_interest_slugs";
+
+export function loadInterestSlugs(): string[] {
+  try {
+    const raw = localStorage.getItem(INTEREST_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((s) => typeof s === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveInterestSlugs(slugs: string[]): void {
+  localStorage.setItem(INTEREST_CACHE_KEY, JSON.stringify(slugs));
 }
 
 export const SIDEBAR_CATEGORIES: { label: string; value: string }[] = [
@@ -196,25 +209,3 @@ export const SIDEBAR_CATEGORIES: { label: string; value: string }[] = [
   { label: "Systems", value: "Systems" },
   { label: "Big Data", value: "Big Data" },
 ];
-
-export const ALL_INTERESTS = [
-  "AI & ML",
-  "Frontend",
-  "Backend",
-  "Systems",
-  "Security",
-  "DevOps",
-  "Databases",
-  "Cloud",
-  "Mobile",
-  "Data",
-];
-
-export function loadInterests(): string[] {
-  const raw = localStorage.getItem("teachtalk_interests");
-  return raw ? JSON.parse(raw) : ["AI & ML", "Frontend", "Systems", "Security", "DevOps"];
-}
-
-export function saveInterests(next: string[]): void {
-  localStorage.setItem("teachtalk_interests", JSON.stringify(next));
-}

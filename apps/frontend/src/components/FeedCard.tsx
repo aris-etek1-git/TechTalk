@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Play, Bookmark, BookmarkCheck, Heart, MessageCircle, Share2 } from "lucide-react";
+import { Play, Bookmark, BookmarkCheck, Heart, MessageCircle, Share2, EyeOff } from "lucide-react";
 import { ContentItem } from "../types/content";
 import { formatCount } from "../lib/content";
 import { SourceBadge } from "./SourceBadge";
@@ -12,9 +12,10 @@ interface FeedCardProps {
   onSave: () => void;
   onLike: () => void;
   onShare?: () => void;
+  onSkip?: () => void;
 }
 
-export function FeedCard({ item, isSaved, isLiked, onOpen, onSave, onLike, onShare }: FeedCardProps) {
+export function FeedCard({ item, isSaved, isLiked, onOpen, onSave, onLike, onShare, onSkip }: FeedCardProps) {
   const [imgFailed, setImgFailed] = useState(false);
   const [pop, setPop] = useState(false);
   const [likePop, setLikePop] = useState(false);
@@ -42,8 +43,15 @@ export function FeedCard({ item, isSaved, isLiked, onOpen, onSave, onLike, onSha
     window.setTimeout(() => setLikePop(false), 320);
   };
 
+  const matched = new Set(item.matchedTags ?? []);
+
   return (
-    <article className="tt-card tt-card-hover p-4 flex flex-col sm:flex-row gap-4">
+    <article
+      className="tt-card tt-card-hover p-4 flex flex-col sm:flex-row gap-4"
+      /* §82 asks that the ranking be explainable; the reasons are carried by the
+         feed response and shown without spending a line of the card on them. */
+      title={item.reasons && item.reasons.length > 0 ? `Pourquoi ce contenu : ${item.reasons.join(", ")}` : undefined}
+    >
       <span className="tt-claw tt-claw-sm tt-claw-corner tt-claw-hover tt-claw-ghost" aria-hidden />
       {/* Thumbnail */}
       <div
@@ -121,11 +129,24 @@ export function FeedCard({ item, isSaved, isLiked, onOpen, onSave, onLike, onSha
           {(item.categories && item.categories.length > 0 ? item.categories : [item.category])
             .slice(0, 4)
             .map((tag) => (
-              <span key={tag} className="tt-chip text-[11px]">
+              <span
+                key={tag}
+                className={`tt-chip text-[11px] ${matched.has(tag) ? "border-primary/40 bg-primary/10 text-primary" : ""}`}
+              >
                 #{tag}
               </span>
             ))}
           <span className="ml-auto flex items-center gap-1">
+            {onSkip && (
+              <button
+                onClick={onSkip}
+                className="tt-btn p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-2"
+                aria-label="Moins de contenus comme celui-ci"
+                title="Moins de contenus comme celui-ci"
+              >
+                <EyeOff size={15} />
+              </button>
+            )}
             <button
               onClick={onShare}
               className="tt-btn p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-2"

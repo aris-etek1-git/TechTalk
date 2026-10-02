@@ -93,6 +93,16 @@ describe('scoreCandidate (§11 level 4)', () => {
     expect(result.reasons).toContain('Nouveau');
     expect(result.reasons).toContain('8 likes');
   });
+
+  it('flags interest overlap so the subscription tab can filter on it', () => {
+    const hit = scoreCandidate(candidate({ tags: [TAG_REACT] }), signals({ interests: new Set(['tag-react']) }), NOW);
+    const miss = scoreCandidate(candidate({ tags: [TAG_REACT] }), signals({ interests: new Set(['tag-rust']) }), NOW);
+    const none = scoreCandidate(candidate({ tags: [TAG_REACT] }), signals(), NOW);
+    expect(hit.matched).toBe(true);
+    expect(miss.matched).toBe(false);
+    // Without any declared interest, nothing can be claimed as subscribed.
+    expect(none.matched).toBe(false);
+  });
 });
 
 describe('applyDiversity (§76)', () => {

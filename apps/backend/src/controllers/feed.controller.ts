@@ -11,6 +11,8 @@ const feedQuerySchema = z.object({
   // The vertical feed only wants the short cuts; a long YouTube video in the
   // middle of it breaks the scroll without teaching anything.
   shape: z.enum(['short', 'long']).optional(),
+  // The subscription tab shows nothing but what the caller asked for (§10).
+  match: z.enum(['all', 'interests']).optional(),
 });
 
 /**
@@ -39,6 +41,7 @@ export async function handleGetFeed(request: FastifyRequest, reply: FastifyReply
       type: parsed.data.type,
       source: parsed.data.source,
       shape: parsed.data.shape,
+      onlyMatched: parsed.data.match === 'interests' && userId !== null,
     });
 
     return reply.status(200).send(page);

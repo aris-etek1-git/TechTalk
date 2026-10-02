@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { 
   handleGetContents, 
+  handleGetContent,
   handleCreateContent,
   handleGetBookmarks,
   handleGetLikes,
@@ -29,4 +30,7 @@ export async function contentRoutes(fastify: FastifyInstance) {
   fastify.get('/read', { preHandler: [fastify.authenticate] }, handleGetReading);
   fastify.post('/read', { preHandler: [fastify.authenticate] }, handleMarkRead);
   fastify.post('/read/batch', { preHandler: [fastify.authenticate] }, handleMarkReadBatch);
+
+  // Parametric, so it is declared last: the static paths above stay unambiguous.
+  fastify.get('/:contentId', { preHandler: [fastify.authenticate] }, handleGetContent);
 }

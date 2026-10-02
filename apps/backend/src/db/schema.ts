@@ -19,6 +19,7 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }), // nullable: Google-only accounts have no password
   googleId: varchar('google_id', { length: 255 }).unique(),
+  githubId: varchar('github_id', { length: 64 }).unique(),
   picture: varchar('picture', { length: 500 }), // avatar URL (Google profile picture)
   // §14 asks for a username: the public handle a profile is addressed by, so a
   // student's link never carries their email. Null until onboarding sets it.

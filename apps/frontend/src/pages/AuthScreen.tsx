@@ -8,7 +8,6 @@ import { BrandMark, BrandWord } from "../components/Brand";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
-const GITHUB_OAUTH_URL = import.meta.env.VITE_GITHUB_OAUTH_URL as string | undefined;
 
 declare global {
   interface Window {
@@ -40,6 +39,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [githubLoading, setGithubLoading] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
   const gisInitialized = useRef(false);
   const lastWidth = useRef(0);
@@ -98,6 +98,45 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // §49 OAuth: the GitHub callback returns to /login with the session in the URL
+  // fragment. Adopt it, then scrub the fragment so the token is not left in
+  // history or visible in the address bar.
+  useEffect(() => {
+    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+    if (!hash) return;
+    const params = new URLSearchParams(hash);
+    const token = params.get("gh_token");
+    const error = params.get("gh_error");
+    const unavailable = params.get("gh_unavailable");
+
+    if (!token && !error && !unavailable) return;
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+
+    if (unavailable) {
+      setError("La connexion GitHub n'est pas configurée sur ce serveur.");
+      return;
+    }
+    if (error) {
+      setError(
+        error === "cancelled"
+          ? "Connexion GitHub annulée."
+          : "La connexion GitHub a échoué. Réessayez ou utilisez l'e-mail."
+      );
+      return;
+    }
+    if (token) {
+      setGithubLoading(true);
+      api
+        .adoptGithubToken(token)
+        .then((res) => {
+          if (res.success && res.user) onAuthSuccess(res.user);
+          else setError(res.error || "La connexion GitHub a échoué.");
+        })
+        .finally(() => setGithubLoading(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleGoogleCredential = async (response: { credential: string }) => {
     setGoogleLoading(true);
     try {
@@ -126,11 +165,8 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   };
 
   const handleGithubClick = () => {
-    if (GITHUB_OAUTH_URL) {
-      window.location.assign(GITHUB_OAUTH_URL);
-      return;
-    }
-    toast.info("La connexion GitHub sera disponible dès que le callback OAuth backend sera configuré.");
+    setGithubLoading(true);
+    window.location.assign(api.githubStartUrl());
   };
 
   const handleSubmit = async () => {
@@ -246,11 +282,13 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
               </button>
             )}
 
-            {GITHUB_OAUTH_URL && (
-              <button onClick={handleGithubClick} className="tt-btn tt-btn-ghost w-full gap-2 px-4 py-3 text-sm">
-                <Github size={17} /> Continuer avec GitHub
-              </button>
-            )}
+            <button
+              onClick={handleGithubClick}
+              disabled={githubLoading}
+              className="tt-btn tt-btn-ghost w-full gap-2 px-4 py-3 text-sm"
+            >
+              <Github size={17} /> {githubLoading ? "Connexion…" : "Continuer avec GitHub"}
+            </button>
           </div>
         </div>
       </div>

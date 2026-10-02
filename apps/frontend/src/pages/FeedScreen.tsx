@@ -4,11 +4,13 @@ import { Clapperboard, Inbox, LayoutGrid, RefreshCw, Rows3, Sparkles } from "luc
 import { toast } from "sonner";
 import { api } from "../services/api";
 import { ContentItem } from "../types/content";
-import { formatCount, mapBackendContentToItem, matchesInterests, rankForUser } from "../lib/content";
+import { mapFeedItemToItem } from "../lib/content";
+import { DWELL_MS, trackInteraction } from "../lib/telemetry";
 import { FeedCard } from "../components/FeedCard";
 import { VideoTile } from "../components/VideoTile";
 import { ShortsFeed } from "../components/ShortsFeed";
 import { SourceBadge } from "../components/SourceBadge";
+import { formatCount } from "../lib/content";
 import { useAppStore } from "../app/store";
 
 type FeedMode = "flux" | "videos" | "shorts";
@@ -20,9 +22,20 @@ const MODES: { id: FeedMode; label: string; icon: typeof Rows3 }[] = [
   { id: "shorts", label: "Vertical", icon: Clapperboard },
 ];
 
-function durationMinutes(item: ContentItem): number {
-  if (!item.duration) return 0;
-  return parseInt(item.duration.split(":")[0], 10) || 0;
+/* Which slice of /api/feed each view of the screen asks the server for.
+   Ranking and diversity happen there (§10/§11), so the client only paginates. */
+function feedParams(mode: FeedMode, length: LengthFilter, tab: "pour-toi" | "abonnements") {
+  const surface: "feed" | "shorts" = mode === "shorts" ? "shorts" : "feed";
+  return {
+    limit: mode === "flux" ? 20 : 30,
+    type: mode === "flux" ? undefined : ("video" as const),
+    // Vertical/shorts mode deliberately sends no `shape` filter: the catalog has
+    // no duration data, so a strict "short" predicate returns nothing. The reel
+    // shows videos, like the classic TikTok feed. Length toggling stays in "Vidéos".
+    shape: mode === "videos" ? (length === "short" ? ("short" as const) : ("long" as const)) : undefined,
+    match: tab === "abonnements" ? ("interests" as const) : undefined,
+    surface,
+  };
 }
 
 function SkeletonCard() {
@@ -42,13 +55,12 @@ function SkeletonCard() {
 
 export function FeedScreen() {
   const navigate = useNavigate();
-  const { savedIds, toggleSave, likedIds, toggleLike, interests, markRead } = useAppStore();
+  const { savedIds, toggleSave, likedIds, toggleLike, markRead } = useAppStore();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tab = searchParams.get("tab") === "abonnements" ? "abonnements" : "pour-toi";
   const modeParam = searchParams.get("mode");
-  const mode: FeedMode =
-    modeParam === "videos" || modeParam === "shorts" ? modeParam : "flux";
+  const mode: FeedMode = modeParam === "videos" || modeParam === "shorts" ? modeParam : "flux";
   const length: LengthFilter = searchParams.get("length") === "short" ? "short" : "long";
 
   const setParam = (key: string, value: string) => {
@@ -57,31 +69,28 @@ export function FeedScreen() {
     setSearchParams(next, { replace: true });
   };
 
-  const pageSize = mode === "flux" ? 30 : 60;
-
-  const [raw, setRaw] = useState<ContentItem[]>([]);
+  const [items, setItems] = useState<ContentItem[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [strategy, setStrategy] = useState("hybrid");
 
   const load = useCallback(
-    async (nextOffset: number, replace: boolean) => {
+    async (nextCursor: string | null, replace: boolean) => {
       setLoading(true);
       setError(null);
+      const { limit, type, shape, match, surface } = feedParams(mode, length, tab);
       try {
-        const categoryParam = tab === "abonnements" && interests.length > 0 ? interests : undefined;
-        const contents = await api.getContents(
-          pageSize,
-          nextOffset,
-          undefined,
-          mode === "flux" ? undefined : "video",
-          categoryParam
-        );
-        const mapped = contents.map(mapBackendContentToItem);
-        setRaw((prev) => (replace ? mapped : [...prev, ...mapped]));
-        setOffset(nextOffset);
-        setHasMore(contents.length >= pageSize);
+        const page = await api.getFeed({ limit, cursor: nextCursor ?? undefined, type, shape, match });
+        const mapped = page.items.map(mapFeedItemToItem);
+        for (const [index, item] of mapped.entries()) {
+          trackInteraction({ contentId: item.id, type: "view", surface, context: { rank: replace ? index : index } });
+        }
+        setStrategy(page.strategy);
+        setItems((prev) => (replace ? mapped : [...prev, ...mapped]));
+        setCursor(page.nextCursor);
+        setHasMore(page.nextCursor !== null);
       } catch (err) {
         console.error("Failed to fetch feed:", err);
         setError("Impossible de charger le flux. Vérifiez votre connexion et réessayez.");
@@ -89,43 +98,52 @@ export function FeedScreen() {
         setLoading(false);
       }
     },
-    [tab, interests, mode, pageSize]
+    [mode, length, tab]
   );
 
   useEffect(() => {
-    setRaw([]);
-    load(0, true);
-  }, [load]);
+    setItems([]);
+    setCursor(null);
+    load(null, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, length, tab]);
 
-  const items = useMemo(() => {
-    const base = tab === "abonnements" ? raw.filter((i) => matchesInterests(i, interests)) : rankForUser(raw, interests);
-    if (mode === "flux") return base;
-    const videos = base.filter((i) => i.type === "video");
-    if (mode === "shorts") return videos.filter((i) => i.youtubeId);
-    return length === "short" ? videos.filter((i) => durationMinutes(i) < 4) : videos.filter((i) => durationMinutes(i) >= 4);
-  }, [raw, tab, interests, mode, length]);
+  /* A subscription tab may legitimately return an empty page mid-walk; keep
+     advancing the cursor until the server runs out, so a short page is not
+     mistaken for the end of the feed. */
+  const autoAdvance = useRef(false);
+  useEffect(() => {
+    if (loading || error || !hasMore || items.length > 0 || cursor === null) return;
+    if (autoAdvance.current) return;
+    autoAdvance.current = true;
+    load(cursor, false).finally(() => {
+      autoAdvance.current = false;
+    });
+  }, [loading, error, hasMore, items.length, cursor, load]);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const shouldObserve = !loading && !error && hasMore && raw.length > 0;
+  const shouldObserve = !loading && !error && hasMore && items.length > 0;
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || !shouldObserve) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) load(offset + pageSize, false);
+        if (entries[0].isIntersecting && cursor) load(cursor, false);
       },
       { rootMargin: "500px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [shouldObserve, load, offset, pageSize]);
+  }, [shouldObserve, load, cursor]);
 
-  const openItem = (item: ContentItem) => {
+  const openItem = (item: ContentItem, surface: "feed" | "shorts") => {
+    trackInteraction({ contentId: item.id, type: "click", surface });
     markRead(item);
     navigate(`/content/${item.id}`, { state: { item } });
   };
 
-  const shareItem = async (item: ContentItem) => {
+  const shareItem = async (item: ContentItem, surface: "feed" | "shorts") => {
+    trackInteraction({ contentId: item.id, type: "share", surface });
     const link = `${window.location.origin}/content/${item.id}`;
     try {
       if (navigator.share) {
@@ -139,11 +157,25 @@ export function FeedScreen() {
     }
   };
 
-  const loadMore = useCallback(() => {
-    if (shouldObserve) load(offset + pageSize, false);
-  }, [shouldObserve, load, offset, pageSize]);
+  const skipItem = (item: ContentItem) => {
+    trackInteraction({ contentId: item.id, type: "skip", surface: "feed" });
+    setItems((prev) => prev.filter((i) => i.id !== item.id));
+  };
 
-  /* Shorts take over the whole viewport: no page padding, no scrolling shell. */
+  const likeItem = (item: ContentItem) => {
+    trackInteraction({ contentId: item.id, type: likedIds.has(item.id) ? "unlike" : "like", surface: "feed" });
+    toggleLike(item);
+  };
+
+  const saveItem = (item: ContentItem) => {
+    trackInteraction({ contentId: item.id, type: savedIds.has(item.id) ? "unsave" : "save", surface: "feed" });
+    toggleSave(item);
+  };
+
+  const loadMore = useCallback(() => {
+    if (shouldObserve && cursor) load(cursor, false);
+  }, [shouldObserve, load, cursor]);
+
   if (mode === "shorts") {
     return (
       <div className="flex-1 min-h-0 flex flex-col">
@@ -165,10 +197,10 @@ export function FeedScreen() {
             savedIds={savedIds}
             likedIds={likedIds}
             onLoadMore={loadMore}
-            onSave={toggleSave}
-            onLike={toggleLike}
-            onShare={shareItem}
-            onOpen={openItem}
+            onSave={saveItem}
+            onLike={likeItem}
+            onShare={(item) => shareItem(item, "shorts")}
+            onOpen={(item) => openItem(item, "shorts")}
           />
         )}
       </div>
@@ -187,7 +219,13 @@ export function FeedScreen() {
           onLength={(l) => setParam("length", l)}
         />
 
-        {loading && raw.length === 0 && (
+        {tab === "abonnements" && strategy === "hybrid" && items.length === 0 && !loading && (
+          <p className="mb-4 text-[13px] text-muted-foreground">
+            Ajoutez des centres d'intérêt dans votre profil pour remplir cet onglet.
+          </p>
+        )}
+
+        {loading && items.length === 0 && (
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <SkeletonCard key={i} />
@@ -205,10 +243,11 @@ export function FeedScreen() {
                 item={item}
                 isSaved={savedIds.has(item.id)}
                 isLiked={likedIds.has(item.id)}
-                onOpen={() => openItem(item)}
-                onSave={() => toggleSave(item)}
-                onLike={() => toggleLike(item)}
-                onShare={() => shareItem(item)}
+                onOpen={() => openItem(item, "feed")}
+                onSave={() => saveItem(item)}
+                onLike={() => likeItem(item)}
+                onShare={() => shareItem(item, "feed")}
+                onSkip={tab === "pour-toi" ? () => skipItem(item) : undefined}
               />
             ))}
           </div>
@@ -218,7 +257,7 @@ export function FeedScreen() {
           <div className="tt-stagger grid grid-cols-1 gap-x-4 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
               <div key={item.id}>
-                <VideoTile item={item} onOpen={() => openItem(item)} />
+                <VideoTile item={item} onOpen={() => openItem(item, "feed")} />
                 <div className="mt-2.5 flex gap-2.5">
                   <span className="tt-brand-tile mt-0.5 h-8 w-8 flex-shrink-0 rounded-full text-[10px] font-bold">
                     {item.author.slice(0, 2).toUpperCase()}
@@ -251,7 +290,7 @@ export function FeedScreen() {
         {!loading && error && (
           <div className="tt-card tt-ring-brand p-8 text-center space-y-4 max-w-md mx-auto mt-6">
             <p className="text-sm text-muted-foreground">{error}</p>
-            <button onClick={() => load(0, true)} className="tt-btn tt-btn-brand px-5 py-2.5 text-sm gap-2">
+            <button onClick={() => load(null, true)} className="tt-btn tt-btn-brand px-5 py-2.5 text-sm gap-2">
               <RefreshCw size={14} /> Réessayer
             </button>
           </div>

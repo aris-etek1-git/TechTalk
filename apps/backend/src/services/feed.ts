@@ -46,6 +46,8 @@ export interface ScoredCandidate {
   seen: boolean;
   /** Carries at least one of the caller's interest tags (§10 subscription tab). */
   matched: boolean;
+  /** Their names, so a card can highlight them instead of re-deriving the why. */
+  matchedTags: string[];
 }
 
 // Half-life of the freshness term, in days. Two weeks keeps a strong catalog
@@ -111,6 +113,8 @@ export function scoreCandidate(
     liked: signals.liked.has(candidate.id),
     saved: signals.saved.has(candidate.id),
     seen: signals.seen.has(candidate.id),
+    matched: matched.length > 0,
+    matchedTags: matched.map((tag) => tag.name),
   };
 }
 
@@ -263,6 +267,8 @@ export interface FeedPage {
       liked: boolean;
       saved: boolean;
       seen: boolean;
+      matched: boolean;
+      matchedTags: string[];
     }
   >;
   nextCursor: string | null;
@@ -284,8 +290,9 @@ export async function buildFeedPage(options: {
   type?: string;
   source?: string;
   shape?: 'short' | 'long';
+  onlyMatched?: boolean;
 }): Promise<FeedPage> {
-  const { userId, limit, cursor, type, source, shape } = options;
+  const { userId, limit, cursor, type, source, shape, onlyMatched } = options;
   const windowSize = Math.min(Math.max(limit * 4, 40), 240);
 
   const conditions = [];
@@ -303,13 +310,18 @@ export async function buildFeedPage(options: {
   if (type) conditions.push(eq(contents.type, type));
   if (source) conditions.push(eq(contents.source, source));
   if (shape) {
-    // Duration is only known for what providers reported; a YouTube Shorts link
-    // counts as short even without it, which is where the vertical feed lives.
+    // Only the providers that report a duration fill that column, so a NULL must
+    // not vanish from both halves of the split: an unknown length counts as a
+    // long video unless the URL itself says it is a Short.
     const short = or(
       sql`${contents.durationSeconds} <= 60`,
       sql`${contents.url} ilike '%/shorts/%'`
     );
-    conditions.push(shape === 'short' ? short! : sql`not ${short}`);
+    conditions.push(
+      shape === "short"
+        ? short!
+        : sql`(${contents.durationSeconds} is null or ${contents.durationSeconds} > 60) and ${contents.url} not ilike '%/shorts/%'`
+    );
   }
 
   const rows = await db
@@ -336,7 +348,10 @@ export async function buildFeedPage(options: {
 
   const signals = await loadSignals(userId, candidates.map((row) => row.id));
   const scored = candidates.map((candidate) => scoreCandidate(candidate, signals));
-  const picked = applyDiversity(scored, limit);
+  // Trimming before the diversity pass, so an interest-only page is filled with
+  // relevant items rather than left short by a post-hoc filter.
+  const relevant = onlyMatched ? scored.filter((item) => item.matched) : scored;
+  const picked = applyDiversity(relevant, limit);
 
   const strategy = signals.interests.size > 0 ? 'hybrid+interests' : 'hybrid';
 
@@ -348,6 +363,8 @@ export async function buildFeedPage(options: {
       liked: item.liked,
       saved: item.saved,
       seen: item.seen,
+      matched: item.matched,
+      matchedTags: item.matchedTags,
     })),
     // Scanned newest-first, so the cursor is the oldest key in the window: the
     // next page continues the walk from there whatever order this page sorted into.

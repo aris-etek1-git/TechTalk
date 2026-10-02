@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { toast } from "sonner";
-import { api, User as ApiUser } from "../services/api";
+import { api, InterestTag, User as ApiUser } from "../services/api";
 import { ContentItem } from "../types/content";
-import { mapBackendContentToItem, loadInterests, saveInterests } from "../lib/content";
+import { mapBackendContentToItem, loadInterestSlugs, saveInterestSlugs } from "../lib/content";
+import { startTelemetryLifecycle } from "../lib/telemetry";
 
 interface AppStore {
   user: ApiUser | null;
@@ -21,8 +22,16 @@ interface AppStore {
   readDates: string[];
   markRead: (item: ContentItem) => void;
 
+  /* §16: interests are taxonomy tags (§9) stored on the account, not a local
+     preference — the feed ranker on the server reads the same rows. */
+  interestTags: InterestTag[];
   interests: string[];
-  toggleInterest: (interest: string) => void;
+  interestSlugs: string[];
+  toggleInterest: (tag: InterestTag) => Promise<void>;
+  setInterests: (tags: InterestTag[]) => Promise<void>;
+  /** Sync the store after a call that already persisted interests elsewhere
+      (onboarding writes them alongside the level and the done-stamp). */
+  applyInterestsLocal: (tags: InterestTag[]) => void;
 }
 
 const Ctx = createContext<AppStore | null>(null);
@@ -47,7 +56,7 @@ export function AppStoreProvider({
   const [saved, setSaved] = useState<ContentItem[]>([]);
   const [savedError, setSavedError] = useState<string | null>(null);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
-  const [interests, setInterests] = useState<string[]>(loadInterests);
+  const [interestTags, setInterestTags] = useState<InterestTag[]>([]);
 
   const todayKey = () => new Date().toISOString().slice(0, 10);
 
@@ -97,6 +106,40 @@ export function AppStoreProvider({
       })
       .catch((err) => {
         console.error("Failed to fetch likes:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    startTelemetryLifecycle();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .getMyInterests()
+      .then((tags) => {
+        if (cancelled) return;
+        setInterestTags(tags);
+        saveInterestSlugs(tags.map((t) => t.slug));
+      })
+      .catch((err) => {
+        console.error("Failed to fetch interests:", err);
+        const cached = loadInterestSlugs();
+        if (cached.length > 0) {
+          // Offline cache: only the slug survives, so the label is rebuilt from
+          // it. Saving still works — the server keys on the slug, never the name.
+          setInterestTags(
+            cached.map((slug) => ({
+              id: slug,
+              slug,
+              name: slug.replace(/[-_]/g, " ").replace(/^\w/, (c) => c.toUpperCase()),
+              kind: "topic" as const,
+            }))
+          );
+        }
       });
     return () => {
       cancelled = true;
@@ -179,14 +222,35 @@ export function AppStoreProvider({
     api.markContentRead(item.id);
   };
 
-  const toggleInterest = (interest: string) => {
-    setInterests((prev) => {
-      const next = prev.includes(interest)
-        ? prev.filter((i) => i !== interest)
-        : [...prev, interest];
-      saveInterests(next);
-      return next;
-    });
+  /** Replace the whole set (§16 lets the picker be revised at any time). */
+  const setInterests = async (next: InterestTag[]) => {
+    const previous = interestTags;
+    const bySlug = (list: InterestTag[]) => list.map((t) => t.slug);
+    setInterestTags(next);
+    saveInterestSlugs(bySlug(next));
+    const res = await api.saveMyInterests(bySlug(next));
+    if (!res.success) {
+      setInterestTags(previous);
+      saveInterestSlugs(bySlug(previous));
+      toast.error(res.error ?? "Centres d’intérêt non enregistrés.");
+      return;
+    }
+    // The server answers with the rows it actually stored, so a slug that was
+    // renamed or merged upstream cannot drift on the client.
+    setInterestTags(res.tags ?? next);
+    saveInterestSlugs(bySlug(res.tags ?? next));
+  };
+
+  const toggleInterest = (tag: InterestTag) =>
+    setInterests(
+      interestTags.some((t) => t.slug === tag.slug)
+        ? interestTags.filter((t) => t.slug !== tag.slug)
+        : [...interestTags, tag]
+    );
+
+  const applyInterestsLocal = (tags: InterestTag[]) => {
+    setInterestTags(tags);
+    saveInterestSlugs(tags.map((t) => t.slug));
   };
 
   return (
@@ -204,8 +268,12 @@ export function AppStoreProvider({
         readIds,
         readDates,
         markRead,
-        interests,
+        interestTags,
+        interests: interestTags.map((t) => t.name),
+        interestSlugs: interestTags.map((t) => t.slug),
         toggleInterest,
+        setInterests,
+        applyInterestsLocal,
       }}
     >
       {children}

@@ -3,6 +3,7 @@ import { desc, eq, and, ilike, or, arrayOverlaps, inArray } from 'drizzle-orm';
 import { db } from '../db/db.js';
 import { contents, bookmarks, likes, readingHistory } from '../db/schema.js';
 import { classifyContent } from '../utils/classify.js';
+import { tagsForContents } from '../services/taxonomy.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -44,6 +45,26 @@ export async function handleGetContents(request: FastifyRequest, reply: FastifyR
   } catch (error) {
     request.log.error(error);
     return reply.status(500).send({ error: 'Internal server error while fetching content.' });
+  }
+}
+
+export async function handleGetContent(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { contentId } = request.params as { contentId?: string };
+    if (!contentId || !UUID_RE.test(contentId)) {
+      return reply.status(400).send({ error: 'Field (contentId) must be a valid content identifier.' });
+    }
+
+    const [content] = await db.select().from(contents).where(eq(contents.id, contentId)).limit(1);
+    if (!content) {
+      return reply.status(404).send({ error: 'Not found', message: 'Contenu introuvable.' });
+    }
+
+    const tagMap = await tagsForContents([contentId]);
+    return reply.status(200).send({ content, tags: tagMap.get(contentId) ?? [] });
+  } catch (error) {
+    request.log.error(error);
+    return reply.status(500).send({ error: 'Internal server error while fetching this content.' });
   }
 }
 

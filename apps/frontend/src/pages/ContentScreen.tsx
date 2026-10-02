@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { api } from "../services/api";
 import { ContentItem } from "../types/content";
 import { mapBackendContentToItem, formatCount } from "../lib/content";
+import { trackInteraction } from "../lib/telemetry";
 import { VideoTile } from "../components/VideoTile";
 import { SourceBadge } from "../components/SourceBadge";
 import { useAppStore } from "../app/store";
@@ -64,22 +65,43 @@ export function ContentScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    // Suggestions and the author pool come from the general content list.
     api
       .getContents(60, 0)
       .then((contents) => {
-        if (cancelled) return;
-        const mapped = contents.map(mapBackendContentToItem);
-        setPool(mapped);
-        if (!item) {
-          const found = mapped.find((c) => c.id === id);
-          if (found) {
-            setItem(found);
-            markRead(found);
-          }
-        }
+        if (!cancelled) setPool(contents.map(mapBackendContentToItem));
       })
-      .catch(() => undefined)
-      .finally(() => !cancelled && setLoading(false));
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // §57: a card arriving from the feed is a ranked stub (no body, no embed), so
+  // the full record is fetched by id. It also lets a bare /content/:id deep link
+  // or refresh resolve, which the earlier "search inside the first 60" could not.
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    api
+      .getContent(id)
+      .then(({ content, tags }) => {
+        if (cancelled) return;
+        const full = mapBackendContentToItem({
+          ...content,
+          authorName: (content as any).author,
+          categories: tags.map((t) => t.name),
+        });
+        setItem((prev) => (prev ? { ...prev, ...full, tags } : full));
+        markRead(full);
+        trackInteraction({ contentId: full.id, type: "view", surface: "content" });
+        setLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setItem((prev) => prev); // keep whatever the navigation handed us
+        setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
@@ -152,6 +174,7 @@ export function ContentScreen() {
         await navigator.clipboard.writeText(link);
         toast.success("Lien copié !");
       }
+      trackInteraction({ contentId: item!.id, type: "share", surface: "content" });
     } catch {
       /* annulé */
     }
@@ -230,7 +253,10 @@ export function ContentScreen() {
             </button>
             <div className="flex items-center gap-1 sm:border-l sm:border-border/60 sm:pl-3">
               <button
-                onClick={() => toggleLike(item)}
+                onClick={() => {
+                  trackInteraction({ contentId: item.id, type: isLiked ? "unlike" : "like", surface: "content" });
+                  toggleLike(item);
+                }}
                 aria-pressed={isLiked}
                 className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isLiked ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-surface-2"}`}
               >
@@ -243,7 +269,10 @@ export function ContentScreen() {
                 <Share2 size={15} /> <span className="hidden md:inline">Partager</span>
               </button>
               <button
-                onClick={() => toggleSave(item)}
+                onClick={() => {
+                  trackInteraction({ contentId: item.id, type: isSaved ? "unsave" : "save", surface: "content" });
+                  toggleSave(item);
+                }}
                 className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isSaved ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-surface-2"}`}
               >
                 {isSaved ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
@@ -277,6 +306,7 @@ export function ContentScreen() {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackInteraction({ contentId: item.id, type: "open_external", surface: "content" })}
             className="tt-btn tt-btn-ghost mb-6 w-full gap-2 px-4 py-2.5 text-[13px]"
           >
             Ouvrir sur {item.source} <ExternalLink size={13} />

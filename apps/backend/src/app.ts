@@ -14,6 +14,8 @@ import { documentRoutes } from './routes/document.routes.js';
 import { groupRoutes } from './routes/group.routes.js';
 import { eventRoutes } from './routes/event.routes.js';
 import { tagRoutes } from './routes/tag.routes.js';
+import { projectRoutes } from './routes/project.routes.js';
+import { searchRoutes } from './routes/search.routes.js';
 import { userRoutes } from './routes/user.routes.js';
 import { interactionRoutes } from './routes/interaction.routes.js';
 import { feedRoutes } from './routes/feed.routes.js';
@@ -77,9 +79,11 @@ export async function createApp(): Promise<FastifyInstance> {
   fastify.register(groupRoutes, { prefix: '/api/groups' });
   fastify.register(eventRoutes, { prefix: '/api/events' });
   fastify.register(tagRoutes, { prefix: '/api/tags' });
+  fastify.register(projectRoutes, { prefix: '/api/projects' });
   fastify.register(userRoutes, { prefix: '/api/users' });
   fastify.register(interactionRoutes, { prefix: '/api/interactions' });
   fastify.register(feedRoutes, { prefix: '/api/feed' });
+  fastify.register(searchRoutes, { prefix: '/api/search' });
 
   fastify.get('/api/health', async () => {
     return { status: 'OK', message: 'TechTalk API is running smoothly' };
