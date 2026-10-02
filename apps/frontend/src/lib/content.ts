@@ -52,6 +52,27 @@ function guessCategory(title: string): string {
   return "Technologie";
 }
 
+/* Providers hand over raw titles, so feed text can still carry the HTML
+   entities it came with ("&#39;" for an apostrophe). textContent on a parsed
+   fragment decodes them without ever running markup. */
+const htmlParser = typeof DOMParser === "undefined" ? null : new DOMParser();
+
+function decodeText(value: unknown): string {
+  const raw = String(value ?? "");
+  if (!raw.includes("&") || !htmlParser) return raw;
+  return htmlParser.parseFromString(raw, "text/html").documentElement.textContent ?? raw;
+}
+
+/* Rows aggregated before the providers spoke French still carry an English
+   placeholder, and a card that says "No description available." in a French
+   interface reads as broken. */
+const PLACEHOLDER = /^(no description available\.?|aucune description( disponible)?\.?)$/i;
+
+function cleanSummary(value: unknown): string {
+  const text = decodeText(value).replace(/\s+/g, " ").trim();
+  return PLACEHOLDER.test(text) ? "" : text;
+}
+
 function guessAuthor(source: string): string {
   const s = source.toLowerCase();
   if (s.includes("dev.to")) return "Dev.to";
@@ -64,7 +85,9 @@ function guessAuthor(source: string): string {
 
 export function mapBackendContentToItem(c: any): ContentItem {
   const h = hashId(String(c.id));
-  const source: string = c.source || "TechTalk";
+  /* Channel and feed names arrive from scraping with stray whitespace, which
+     makes the author look duplicated on the card. */
+  const source: string = String(c.source ?? "").replace(/\s+/g, " ").trim() || "TechTalk";
 
   let image = c.image || "";
   let youtubeId = "";
@@ -99,16 +122,16 @@ export function mapBackendContentToItem(c: any): ContentItem {
     id: c.id,
     type: c.type,
     source: source as ContentItem["source"],
-    title: c.title,
+    title: decodeText(c.title),
     url: c.url,
-    summary: c.summary || "Aucune description disponible.",
+    summary: cleanSummary(c.summary) || "Aucune description.",
     image,
     duration,
     readTime,
     author: c.authorName || guessAuthor(source),
     category,
     categories,
-    body: c.summary || "Aucun contenu disponible.",
+    body: cleanSummary(c.summary) || "Aucun contenu.",
     bodyHtml: c.body || null,
     date: relativeDateFr(c.createdAt),
     publishedAt: c.createdAt,

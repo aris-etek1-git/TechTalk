@@ -20,6 +20,8 @@ interface AnnalsScreenProps {
 
 const PERIODS = ["S1", "S2", "S3", "S4", "S5"];
 
+const STATUS_LABEL: Record<string, string> = { pending: "en attente", rejected: "rejeté" };
+
 function formatBytes(sizeBytes: number): string {
   if (sizeBytes < 1024) return `${sizeBytes} B`;
   if (sizeBytes < 1048576) return `${Math.round(sizeBytes / 1024)} KB`;
@@ -57,7 +59,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
     try {
       setCourses(await api.getCourses({ organizationId: orgId, search: search || undefined }));
     } catch (err: any) {
-      toast.error(err.message || "Failed to load courses");
+      toast.error(err.message || "Matières indisponibles.");
     } finally {
       setLoadingCourses(false);
     }
@@ -87,7 +89,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
           await loadCourses(first.id, "");
         }
       } catch (err: any) {
-        if (!cancelled) toast.error(err.message || "Failed to load your schools");
+        if (!cancelled) toast.error(err.message || "Écoles indisponibles.");
       } finally {
         if (!cancelled) setLoadingOrganizations(false);
       }
@@ -119,7 +121,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
         })
       );
     } catch (err: any) {
-      toast.error(err.message || "Failed to load documents");
+      toast.error(err.message || "Documents indisponibles.");
     } finally {
       setLoadingDocuments(false);
     }
@@ -149,7 +151,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
       toast.error(result.error);
       return;
     }
-    toast.success("Course created");
+    toast.success("Matière créée.");
     setNewCourseName("");
     await loadCourses(organizationId, courseQuery.trim());
   }
@@ -157,7 +159,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
   async function handleUpload() {
     const file = fileInput.current?.files?.[0];
     if (!course || !file) {
-      toast.error("Choose a PDF, PNG or JPEG file first.");
+      toast.error("Choisissez d’abord un fichier PDF, PNG ou JPEG.");
       return;
     }
     setUploading(true);
@@ -175,7 +177,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
       toast.error(result.error);
       return;
     }
-    toast.success("Uploaded — waiting for a moderator to approve it.");
+    toast.success("Envoyé — en attente de validation par un modérateur.");
     await Promise.all([loadDocuments(), loadCourses(course.organizationId, courseQuery.trim())]);
   }
 
@@ -241,14 +243,14 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
             className="tt-btn -ml-2 gap-2 p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            <span className="text-sm">Back</span>
+            <span className="text-sm">Retour</span>
           </button>
           <div className="tt-card tt-ring-brand p-8 text-center">
             <div className="tt-glass mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full text-muted-foreground">
               <BookOpen size={22} />
             </div>
             <p className="text-sm text-muted-foreground">
-              Join a campus first — past papers are shared inside your school.
+              Rejoignez d’abord un campus — les sujets s’échangent dans votre école.
             </p>
           </div>
         </div>
@@ -270,11 +272,11 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
             className="tt-btn -ml-2 gap-2 p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            <span className="text-sm">All courses</span>
+            <span className="text-sm">Toutes les matières</span>
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="tt-brand-tile flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl">
+            <div className="tt-brand-tile flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
               <FileText size={20} />
             </div>
             <div className="min-w-0">
@@ -284,8 +286,8 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
           </div>
 
           <section className="tt-card space-y-3 p-5">
-            <h3 className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-              Add a past paper
+            <h3 className="tt-label">
+              Ajouter un sujet
             </h3>
             <input
               ref={fileInput}
@@ -296,7 +298,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
             <input
               value={uploadTitle}
               onChange={(event) => setUploadTitle(event.target.value)}
-              placeholder="Title — defaults to the file name"
+              placeholder="Titre — le nom du fichier par défaut"
               className="tt-field w-full px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground"
             />
             <div className="flex flex-wrap gap-2">
@@ -305,7 +307,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 onChange={(event) => setUploadPeriod(event.target.value)}
                 className="tt-field px-4 py-2.5 text-sm text-foreground"
               >
-                <option value="">Semester</option>
+                <option value="">Semestre</option>
                 {PERIODS.map((value) => (
                   <option key={value} value={value}>
                     {value}
@@ -324,7 +326,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 className="tt-btn tt-btn-brand shrink-0 px-5 py-2.5 text-sm"
               >
                 <Upload size={13} />
-                {uploading ? "Uploading…" : "Upload"}
+                {uploading ? "Envoi…" : "Envoyer"}
               </button>
             </div>
           </section>
@@ -336,7 +338,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 <input
                   value={docQuery}
                   onChange={(event) => setDocQuery(event.target.value)}
-                  placeholder="Search titles…"
+                  placeholder="Rechercher un titre…"
                   className="tt-field w-full py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -345,7 +347,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 onChange={(event) => setPeriod(event.target.value)}
                 className="tt-field px-3 py-2.5 text-xs text-foreground"
               >
-                <option value="">All semesters</option>
+                <option value="">Tous les semestres</option>
                 {PERIODS.map((value) => (
                   <option key={value} value={value}>
                     {value}
@@ -355,7 +357,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
               <input
                 value={academicYear}
                 onChange={(event) => setAcademicYear(event.target.value)}
-                placeholder="Year"
+                placeholder="Année"
                 className="tt-field w-28 px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground"
               />
               <select
@@ -363,8 +365,8 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 onChange={(event) => setSort(event.target.value as "recent" | "downloads")}
                 className="tt-field px-3 py-2.5 text-xs text-foreground"
               >
-                <option value="recent">Newest</option>
-                <option value="downloads">Most downloaded</option>
+                <option value="recent">Plus récents</option>
+                <option value="downloads">Plus téléchargés</option>
               </select>
             </div>
 
@@ -381,7 +383,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                 <div className="tt-glass mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full text-muted-foreground">
                   <FileText size={20} />
                 </div>
-                <p className="text-sm text-muted-foreground">No past paper matches these filters yet.</p>
+                <p className="text-sm text-muted-foreground">Aucun sujet ne correspond à ces filtres pour l’instant.</p>
               </div>
             )}
 
@@ -397,12 +399,12 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                       <p className="truncate text-[11px] font-mono text-muted-foreground">
                         {doc.period ? `${doc.period} · ` : ""}
                         {doc.academicYear ? `${doc.academicYear} · ` : ""}
-                        {formatBytes(doc.sizeBytes)} · {doc.downloads} downloads
-                        {doc.status !== "approved" ? ` · ${doc.status}` : ""}
+                        {formatBytes(doc.sizeBytes)} · {doc.downloads} téléchargements
+                        {doc.status !== "approved" ? ` · ${STATUS_LABEL[doc.status] ?? doc.status}` : ""}
                       </p>
                       {doc.isMine && doc.status === "pending" && (
                         <p className="mt-1 text-[11px] text-muted-foreground">
-                          Only you see this until a moderator approves it.
+                          Visible uniquement par vous jusqu’à validation par un modérateur.
                         </p>
                       )}
                     </div>
@@ -419,7 +421,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         <button
                           onClick={() => handleStatus(doc, "approved")}
                           disabled={busyId === doc.id}
-                          className="tt-btn p-2 text-emerald-600 transition-colors hover:bg-emerald-500/10 dark:text-emerald-400"
+                          className="tt-btn p-2 text-primary transition-colors hover:bg-primary/10"
                           aria-label="Approuver"
                         >
                           <Check size={14} />
@@ -464,7 +466,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
           className="tt-btn -ml-2 gap-2 p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
         >
           <ArrowLeft size={18} />
-          <span className="text-sm">Back</span>
+          <span className="text-sm">Retour</span>
         </button>
 
         {organizations.length > 1 && (
@@ -486,13 +488,13 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
         )}
 
         <section className="space-y-3">
-          <h2 className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Courses</h2>
+          <h2 className="tt-label">Matière</h2>
           <div className="relative">
             <BookOpen size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               value={courseQuery}
               onChange={(event) => setCourseQuery(event.target.value)}
-              placeholder="Search a course…"
+              placeholder="Rechercher une matière…"
               className="tt-field w-full py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -508,7 +510,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
 
           {!loadingCourses && courses.length === 0 && (
             <p className="tt-card p-6 text-center text-sm text-muted-foreground">
-              No course yet. Add the first one below so students can share its papers.
+              Aucune matière. Ajoutez la première ci-dessous pour que les étudiants partagent ses sujets.
             </p>
           )}
 
@@ -539,7 +541,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
           className="tt-card flex items-end gap-3 p-5"
         >
           <label className="flex-1 space-y-1.5">
-            <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+            <span className="tt-label">
               New course
             </span>
             <input
@@ -555,7 +557,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
             className="tt-btn tt-btn-brand shrink-0 px-5 py-3 text-sm"
           >
             <Plus size={13} />
-            {creatingCourse ? "…" : "Create"}
+            {creatingCourse ? "…" : "Créer"}
           </button>
         </form>
       </div>

@@ -278,20 +278,20 @@ function FeedBar({
 }) {
   return (
     <div className="mb-5">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-glass-border pb-3">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-border pb-3">
         <div className="flex items-center gap-5">
           {(["pour-toi", "abonnements"] as const).map((id) => {
             const active = tab === id;
             return (
               <button key={id} onClick={() => onTab(id)} className="tt-btn relative px-1 pb-2 text-[15px]">
                 <span className={active ? "text-foreground font-bold" : "text-muted-foreground font-medium"}>
-                  {id === "pour-toi" && <Sparkles size={13} className="inline -mt-0.5 mr-1 text-primary" />}
+                  {id === "pour-toi" && <Sparkles size={13} className="inline -mt-0.5 mr-1 text-muted-foreground" />}
                   {id === "pour-toi" ? "Pour toi" : "Abonnements"}
                 </span>
                 {active && (
                   <span
                     className="absolute bottom-[-13px] left-0 right-0 h-[3px] rounded-full"
-                    style={{ background: "var(--violet)" }}
+                    style={{ background: "var(--primary)" }}
                   />
                 )}
               </button>
@@ -299,7 +299,7 @@ function FeedBar({
           })}
         </div>
 
-        <div className="tt-glass ml-auto flex items-center gap-1 rounded-full p-1">
+        <div className="ml-auto flex items-center gap-1 rounded-full border border-border bg-surface-2 p-1">
           {MODES.map(({ id, label, icon: Icon }) => {
             const active = mode === id;
             return (
@@ -308,7 +308,7 @@ function FeedBar({
                 onClick={() => onMode(id)}
                 title={label}
                 className={`tt-btn gap-1.5 px-3 py-1.5 text-[12px] ${
-                  active ? "tt-btn-brand" : "text-muted-foreground hover:text-foreground"
+                  active ? "bg-surface-3 text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon size={14} />
@@ -346,7 +346,7 @@ function FeedBar({
 function ShortsSkeleton() {
   return (
     <div className="flex-1 flex items-center justify-center">
-      <div className="tt-skeleton h-[70vh] w-[min(430px,90vw)] rounded-[28px]" />
+      <div className="tt-skeleton h-[70vh] w-[min(430px,90vw)] rounded-2xl" />
     </div>
   );
 }
@@ -357,9 +357,9 @@ function EmptyState({ tab, mode }: { tab: "pour-toi" | "abonnements"; mode: Feed
       <div className="flex justify-center">
         <span className="tt-glass tt-btn w-14 h-14">
           {tab === "abonnements" ? (
-            <Sparkles size={22} className="text-primary" />
+            <Sparkles size={22} className="text-muted-foreground" />
           ) : (
-            <Inbox size={22} className="text-primary" />
+            <Inbox size={22} className="text-muted-foreground" />
           )}
         </span>
       </div>

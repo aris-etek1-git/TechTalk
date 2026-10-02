@@ -15,7 +15,7 @@ export function Field({
 }: FieldProps) {
   return (
     <div>
-      <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-2 block">
+      <label className="mb-2 block text-xs font-medium text-muted-foreground">
         {label}
       </label>
       <input

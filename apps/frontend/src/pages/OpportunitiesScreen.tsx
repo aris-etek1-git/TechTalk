@@ -90,12 +90,8 @@ export function OpportunitiesScreen() {
     <div className="flex-1 overflow-y-auto tt-scrollbar">
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
         <header className="mb-8 max-w-3xl tt-fade-up">
-          <p className="tt-label mb-3">Opportunités / passer à l’action</p>
-          <h1 className="text-3xl font-extrabold md:text-5xl">Le prochain mouvement compte.</h1>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Stages, bourses, hackathons et recherche sélectionnés selon vos compétences, vos objectifs et
-            votre contexte.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Le prochain mouvement compte.</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">Stages, bourses et hackathons filtrés selon vos compétences.</p>
         </header>
 
         <div className="mb-6 flex flex-wrap gap-2">
@@ -122,13 +118,13 @@ export function OpportunitiesScreen() {
               <article key={item.title} className="tt-card tt-card-hover p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="tt-label text-primary">{item.type}</span>
-                    <h2 className="mt-2 text-lg font-extrabold">{item.title}</h2>
-                    <p className="mt-1 text-xs font-semibold text-accent">{item.organization}</p>
+                    <span className="tt-label">{item.type}</span>
+                    <h2 className="mt-2 text-lg font-bold">{item.title}</h2>
+                    <p className="mt-1 text-xs text-muted-foreground">{item.organization}</p>
                   </div>
                   <div className="border border-primary px-2 py-1 text-center">
                     <strong className="block text-sm text-primary">{item.match}%</strong>
-                    <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                    <span className="tt-label">
                       pertinence
                     </span>
                   </div>
@@ -171,9 +167,9 @@ export function OpportunitiesScreen() {
         )}
 
         <div className="mt-8 tt-card flex items-center gap-4 p-5">
-          <Globe2 className="shrink-0 text-accent" size={22} />
+          <Globe2 className="shrink-0 text-muted-foreground" size={22} />
           <div>
-            <h2 className="font-extrabold">Une opportunité n’est pas qu’une offre.</h2>
+            <h2 className="font-bold">Une opportunité n’est pas qu’une offre.</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               TechTalk relie compétences, projets, personnes et contexte pour expliquer pourquoi elle
               mérite votre attention.

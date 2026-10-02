@@ -52,13 +52,13 @@ const CAMPUS_ITEMS = [
 ];
 
 const SOURCES = [
-  { label: "YouTube", value: "YouTube", icon: Youtube, tint: "text-primary" },
-  { label: "Reddit", value: "Reddit", icon: MessageCircle, tint: "text-accent" },
-  { label: "GitHub", value: "GitHub", icon: Github, tint: "text-foreground" },
-  { label: "LeetCode", value: "LeetCode", icon: Braces, tint: "text-primary" },
-  { label: "Dev.to", value: "Dev.to", icon: Code2, tint: "text-accent" },
-  { label: "TechCrunch", value: "TechCrunch", icon: Newspaper, tint: "text-accent" },
-  { label: "Medium", value: "Medium", icon: BookText, tint: "text-accent" },
+  { label: "YouTube", value: "YouTube", icon: Youtube },
+  { label: "Reddit", value: "Reddit", icon: MessageCircle },
+  { label: "GitHub", value: "GitHub", icon: Github },
+  { label: "LeetCode", value: "LeetCode", icon: Braces },
+  { label: "Dev.to", value: "Dev.to", icon: Code2 },
+  { label: "TechCrunch", value: "TechCrunch", icon: Newspaper },
+  { label: "Medium", value: "Medium", icon: BookText },
 ];
 
 function SidebarLink({
@@ -86,11 +86,11 @@ function SidebarLink({
       className={[
         "tt-btn gap-3 px-3 py-2.5 justify-start text-sm",
         active
-          ? "bg-accent/12 text-accent font-bold ring-1 ring-primary/20"
+          ? "bg-secondary text-foreground font-semibold"
           : "text-muted-foreground hover:text-foreground hover:bg-surface-2",
       ].join(" ")}
     >
-      <Icon size={size} className={tint} />
+      <Icon size={size} className={active ? "text-primary" : tint} />
       {label}
     </Link>
   );
@@ -114,17 +114,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div>
-        <h3 className="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Sources
-        </h3>
+        <h3 className="tt-label mb-2 px-3">Sources</h3>
         <div className="flex flex-col gap-0.5">
-          {SOURCES.map(({ label, value, icon: Icon, tint }) => (
+          {SOURCES.map(({ label, value, icon: Icon }) => (
             <SidebarLink
               key={value}
               to={`/explore?source=${encodeURIComponent(value)}`}
               label={label}
               icon={Icon}
-              tint={tint}
               size={16}
               onNavigate={onNavigate}
             />
@@ -133,9 +130,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div>
-        <h3 className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Catégories
-        </h3>
+        <h3 className="tt-label mb-2 px-3">Catégories</h3>
         <div className="flex flex-wrap gap-1.5 px-1">
           {SIDEBAR_CATEGORIES.map((cat) => (
             <Link
@@ -173,7 +168,7 @@ export function AppShell() {
   return (
     <div className="h-dvh tt-shell flex overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 flex-shrink-0 border-r border-glass-border bg-sidebar backdrop-blur-2xl">
+      <aside className="hidden lg:flex w-60 flex-shrink-0 border-r border-border bg-sidebar">
         <SidebarContent />
       </aside>
 
@@ -181,7 +176,7 @@ export function AppShell() {
       {drawerOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-glass-border bg-sidebar shadow-2xl backdrop-blur-2xl">
+          <div className="absolute inset-y-0 left-0 w-72 border-r border-border bg-sidebar shadow-2xl">
             <button
               onClick={() => setDrawerOpen(false)}
               className="tt-btn absolute top-3 right-2 p-2 text-muted-foreground"
@@ -196,7 +191,7 @@ export function AppShell() {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="z-40 flex-shrink-0 tt-glass-strong border-b border-glass-border">
+        <header className="z-40 flex-shrink-0 border-b border-border bg-background/85 backdrop-blur-md">
           <div className="px-3 md:px-5 h-14 flex items-center gap-2">
             <button
               onClick={() => setDrawerOpen(true)}
@@ -215,7 +210,7 @@ export function AppShell() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher des vidéos, créateurs, sujets..."
+                placeholder="Rechercher une vidéo, un créateur, un sujet"
                 className="tt-field w-full pl-10 pr-4 py-2 text-sm text-foreground placeholder:text-muted-foreground"
               />
               <Search

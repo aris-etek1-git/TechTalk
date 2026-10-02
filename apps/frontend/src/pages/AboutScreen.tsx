@@ -31,7 +31,7 @@ export function AboutScreen({ onBack }: AboutScreenProps) {
           <div
             aria-hidden
             className="pointer-events-none absolute -top-14 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-            style={{ background: "var(--sky-soft)" }}
+            style={{ background: "var(--surface-2)" }}
           />
           <BrandMark size={64} radius="16px" glyph={26} />
           <div className="mt-4">

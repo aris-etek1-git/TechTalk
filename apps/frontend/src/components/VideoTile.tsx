@@ -37,7 +37,7 @@ export function VideoTile({ item, onOpen, compact = false }: VideoTileProps) {
     <button onClick={onOpen} className="tt-card tt-card-hover overflow-hidden group text-left w-full">
       <span className="relative block aspect-[16/9] bg-surface-2 overflow-hidden">
         {imgFailed ? (
-          <span className="w-full h-full flex items-center justify-center" style={{ background: "var(--sky-soft)" }}>
+          <span className="w-full h-full flex items-center justify-center" style={{ background: "var(--surface-2)" }}>
             <Play size={24} className="text-muted-foreground/50" />
           </span>
         ) : (
@@ -48,7 +48,6 @@ export function VideoTile({ item, onOpen, compact = false }: VideoTileProps) {
             className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
           />
         )}
-        <span className="absolute inset-0 tt-scrim opacity-50" />
         <span className="absolute bottom-2 right-2 text-[11px] font-mono text-white bg-black/60 px-1.5 py-0.5 rounded-md">
           {item.type === "video" ? item.duration : item.readTime}
         </span>

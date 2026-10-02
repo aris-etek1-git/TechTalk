@@ -176,14 +176,12 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
       </div>
 
       {/* Wordmark */}
-      <div className="relative mb-12 text-center">
+      <div className="relative mb-10 text-center">
         <div className="mb-4 flex items-center justify-center gap-3">
-          <BrandMark size={48} radius="14px" glyph={22} />
+          <BrandMark size={44} radius="12px" glyph={21} />
           <BrandWord size="text-3xl" />
         </div>
-        <p className="text-sm text-muted-foreground">
-          Découvre, scrolle, apprends.
-        </p>
+        <p className="mt-4 text-sm text-muted-foreground">Le contenu tech, réuni.</p>
       </div>
 
       <div className="relative w-full max-w-sm">
@@ -199,7 +197,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                 }}
                 className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition-all ${
                   mode === m
-                    ? "bg-surface text-foreground shadow-card"
+                    ? "bg-surface-3 text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -209,7 +207,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
           </div>
 
           {error && (
-            <div className="mb-6 rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-xs text-destructive">
+            <div className="mb-6 rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-xs text-destructive">
               {error}
             </div>
           )}
@@ -226,7 +224,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
               disabled={loading}
               className="tt-btn tt-btn-brand mt-2 w-full px-5 py-3 text-sm"
             >
-              {loading ? "Patientez…" : mode === "login" ? "Se connecter →" : "Créer un compte →"}
+              {loading ? "Patientez…" : mode === "login" ? "Se connecter" : "Créer un compte"}
             </button>
 
             <div className="flex items-center gap-3 my-1">
@@ -248,9 +246,11 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
               </button>
             )}
 
-            <button onClick={handleGithubClick} className="tt-btn tt-btn-ghost w-full gap-2 px-4 py-3 text-sm">
-              <Github size={17} /> Continuer avec GitHub
-            </button>
+            {GITHUB_OAUTH_URL && (
+              <button onClick={handleGithubClick} className="tt-btn tt-btn-ghost w-full gap-2 px-4 py-3 text-sm">
+                <Github size={17} /> Continuer avec GitHub
+              </button>
+            )}
           </div>
         </div>
       </div>

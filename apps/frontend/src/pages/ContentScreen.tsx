@@ -120,7 +120,7 @@ export function ContentScreen() {
     return (
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto p-6 space-y-4">
-          <div className="tt-skeleton aspect-[16/9] rounded-2xl" />
+          <div className="tt-skeleton aspect-[16/9] rounded-xl" />
           <div className="tt-skeleton h-6 w-2/3" />
           <div className="tt-skeleton h-4 w-1/3" />
         </div>
@@ -141,6 +141,8 @@ export function ContentScreen() {
 
   const isSaved = savedIds.has(item.id);
   const isLiked = likedIds.has(item.id);
+  /* Aggregated items often carry the platform as their author. */
+  const sameAuthorAndSource = item.author.trim().toLowerCase() === item.source.trim().toLowerCase();
 
   const share = async () => {
     const link = `${window.location.origin}/content/${item!.id}`;
@@ -178,7 +180,7 @@ export function ContentScreen() {
           </button>
 
           {/* Player / hero */}
-          <div className="relative aspect-video rounded-2xl overflow-hidden bg-black border border-border">
+          <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-border">
             {item.type === "video" && item.embedCode ? (
               <div
                 className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full"
@@ -187,9 +189,9 @@ export function ContentScreen() {
             ) : (
               <a href={item.url} target="_blank" rel="noopener noreferrer" className="block w-full h-full group">
                 <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-90" />
-                <span className="absolute inset-0 tt-scrim" />
+                <span className="absolute inset-0 bg-black/25" />
                 <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="tt-glass-strong w-16 h-16 rounded-full inline-flex items-center justify-center border-white/20 group-hover:scale-110 transition-transform">
+                  <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-black/55 transition-transform group-hover:scale-105">
                     <ExternalLink size={22} className="text-white" />
                   </span>
                 </span>
@@ -197,26 +199,32 @@ export function ContentScreen() {
             )}
           </div>
 
-          <h1 className="text-xl md:text-2xl font-extrabold tracking-tight leading-snug mt-4 mb-3">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight leading-snug mt-4 mb-3">
             {item.title}
           </h1>
 
           {/* Author + actions */}
           <div className="tt-card p-4 flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <span className="tt-brand-tile w-10 h-10 rounded-full text-[11px] font-bold flex-shrink-0">
-                {item.author.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase()}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-bold truncate">{item.author}</p>
-                <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-                  <SourceBadge source={item.source} /> {item.date}
-                </p>
-              </div>
+              {sameAuthorAndSource ? (
+                <SourceBadge source={item.source} />
+              ) : (
+                <>
+                  <span className="tt-brand-tile h-10 w-10 flex-shrink-0 rounded-full text-[11px] font-bold">
+                    {item.author.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase()}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold truncate">{item.author}</p>
+                    <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <SourceBadge source={item.source} /> {item.date}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
             <button
               onClick={() => toast.info("Les abonnements aux créateurs arrivent bientôt !")}
-              className="tt-btn tt-btn-secondary px-5 py-2 text-sm flex-shrink-0 gap-1.5"
+              className="tt-btn tt-btn-brand px-5 py-2 text-sm flex-shrink-0 gap-1.5"
             >
               <Plus size={14} /> S'abonner
             </button>
@@ -224,9 +232,9 @@ export function ContentScreen() {
               <button
                 onClick={() => toggleLike(item)}
                 aria-pressed={isLiked}
-                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isLiked ? "text-orange bg-orange/10" : "text-muted-foreground hover:bg-surface-2"}`}
+                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isLiked ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-surface-2"}`}
               >
-                <Heart size={15} className={isLiked ? "fill-orange" : ""} /> {formatCount(item.likes + (isLiked ? 1 : 0))}
+                <Heart size={15} className={isLiked ? "fill-primary" : ""} /> {formatCount(item.likes + (isLiked ? 1 : 0))}
               </button>
               <span className="tt-btn gap-1.5 px-3 py-2 text-[12px] text-muted-foreground">
                 <MessageCircle size={15} /> {formatCount(item.comments + comments.length)}
@@ -236,7 +244,7 @@ export function ContentScreen() {
               </button>
               <button
                 onClick={() => toggleSave(item)}
-                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isSaved ? "text-orange bg-orange/10" : "text-muted-foreground hover:bg-surface-2"}`}
+                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isSaved ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-surface-2"}`}
               >
                 {isSaved ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
                 <span className="hidden md:inline">{isSaved ? "Enregistré" : "Enregistrer"}</span>
@@ -254,32 +262,25 @@ export function ContentScreen() {
               )}
             </p>
             <button onClick={() => setExpanded((v) => !v)} className="text-[12px] font-semibold text-primary mt-2 hover:underline">
-              {expanded ? "Réduire" : "... plus"}
+              {expanded ? "Réduire" : "Voir plus"}
             </button>
             <div className="flex flex-wrap gap-1.5 mt-3">
               {(item.categories && item.categories.length > 0 ? item.categories : [item.category]).map((tag) => (
                 <span key={tag} className="tt-chip text-[11px]">
-                  #{tag.toLowerCase().replace(/\s+/g, "")}
+                  #{tag}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Original source */}
-          <div className="tt-card p-4 mb-6 flex items-center gap-3">
-            <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-1">Source originale</p>
-              <p className="text-sm font-semibold truncate">{item.source}</p>
-            </div>
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="tt-btn tt-btn-ghost ml-auto px-4 py-2 text-[13px] gap-1.5 flex-shrink-0"
-            >
-              Voir sur {item.source} <ExternalLink size={13} />
-            </a>
-          </div>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tt-btn tt-btn-ghost mb-6 w-full gap-2 px-4 py-2.5 text-[13px]"
+          >
+            Ouvrir sur {item.source} <ExternalLink size={13} />
+          </a>
 
           {/* Comments (local to this browser — no backend yet) */}
           <section className="tt-card p-4">

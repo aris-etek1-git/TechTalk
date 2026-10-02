@@ -3,15 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Search,
   Play,
-  Youtube,
-  MessageCircle,
-  Github,
-  Braces,
-  Twitter,
   Layers,
   Sparkles,
   Users,
-  Gift,
+  Compass,
   ArrowRight,
 } from "lucide-react";
 import { api } from "../services/api";
@@ -22,37 +17,13 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { Brand } from "../components/Brand";
 
 const FEATURES = [
-  {
-    icon: Layers,
-    title: "Contenu agrégé",
-    text: "YouTube, Reddit, X, GitHub et plus encore, réunis dans un seul flux.",
-  },
-  {
-    icon: Sparkles,
-    title: "IA & Recommandations",
-    text: "Des suggestions adaptées à vos centres d'intérêt de développeur.",
-  },
-  {
-    icon: Users,
-    title: "Communauté",
-    text: "Échangez avec des devs et étudiants du monde entier pour améliorer votre workflow.",
-  },
-  {
-    icon: Gift,
-    title: "100% gratuit",
-    text: "Accédez à du contenu de qualité sans payer.",
-  },
+  { icon: Layers, title: "Agrégé", text: "YouTube, Reddit, Dev.to et GitHub dans un seul flux." },
+  { icon: Sparkles, title: "Personnalisé", text: "Vos intérêts et votre niveau décident de l'ordre." },
+  { icon: Compass, title: "Ordonné", text: "Apprendre, pratiquer, construire, puis postuler." },
+  { icon: Users, title: "Campus", text: "Les ressources et les gens autour de votre école." },
 ];
 
-const SOURCE_CHIPS = [
-  { icon: Youtube, label: "YouTube", tint: "bg-primary text-primary-foreground" },
-  { icon: MessageCircle, label: "Reddit", tint: "bg-accent text-accent-foreground" },
-  { icon: Twitter, label: "X", tint: "bg-foreground text-background" },
-  { icon: Github, label: "GitHub", tint: "bg-foreground text-background" },
-  { icon: Braces, label: "LeetCode", tint: "bg-primary text-primary-foreground" },
-];
-
-const CORE_DIMENSIONS = ["Learn", "Practice", "Build", "Connect", "Campus", "Opportunities"];
+const SOURCES = ["YouTube", "Reddit", "Dev.to", "GitHub", "LeetCode"];
 
 export function LandingScreen() {
   const navigate = useNavigate();
@@ -70,16 +41,16 @@ export function LandingScreen() {
   return (
     <div className="min-h-dvh tt-shell flex flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-40 tt-glass-strong border-b border-glass-border">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2.5">
-            <Brand size={32} />
+      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-6">
+          <Link to="/" className="flex items-center">
+            <Brand size={30} />
           </Link>
-          <nav className="hidden md:flex items-center gap-1 ml-6 text-sm text-muted-foreground">
+          <nav className="hidden md:flex items-center gap-1 text-sm text-muted-foreground">
             <Link to="/" className="tt-btn px-3 py-1.5 text-foreground font-semibold">Accueil</Link>
-            <Link to={loggedIn ? "/feed" : "/login"} className="tt-btn px-3 py-1.5 hover:text-foreground">Explorer</Link>
-            <Link to={loggedIn ? "/campus" : "/login"} className="tt-btn px-3 py-1.5 hover:text-foreground">Communauté</Link>
-            <Link to={loggedIn ? "/annals" : "/login"} className="tt-btn px-3 py-1.5 hover:text-foreground">Ressources</Link>
+            <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn px-3 py-1.5 hover:text-foreground">Explorer</Link>
+            <Link to={loggedIn ? "/campus" : "/login"} className="tt-btn px-3 py-1.5 hover:text-foreground">Campus</Link>
+            <Link to={loggedIn ? "/annals" : "/login"} className="tt-btn px-3 py-1.5 hover:text-foreground">Annales</Link>
           </nav>
           <div className="ml-auto flex items-center gap-1.5">
             <ThemeToggle />
@@ -101,99 +72,77 @@ export function LandingScreen() {
         </div>
       </header>
 
-      {/* Hero */}
       <main className="flex-1">
-        <section className="max-w-6xl mx-auto px-4 pt-14 md:pt-20 pb-12 grid md:grid-cols-2 gap-10 items-center">
+        {/* Hero */}
+        <section className="mx-auto grid max-w-5xl items-center gap-12 px-4 pt-20 pb-16 md:grid-cols-[1.05fr_.95fr] md:pt-24">
           <div className="tt-fade-up">
-            <span className="tt-chip mb-5">
-              <Sparkles size={11} className="text-primary" />
-              Découverte de contenu tech
-            </span>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.1] mb-5">
-              La plateforme vidéo
+            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight md:text-[3.25rem]">
+              Tout le contenu tech,
               <br />
-              des <span className="tt-accent-violet">développeurs</span>
+              réuni dans un seul flux.
             </h1>
-            <p className="text-[15px] text-muted-foreground leading-relaxed mb-7 max-w-md">
-              Découvrez, apprenez et partagez autour du code, de la tech et de l'IA.
-              Des vidéos, des tutos, des extraits de conférences et bien encore — le tout
-              agrégé depuis YouTube, Reddit et d'autres sources.
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+              Vidéos, articles, exercices et opportunités choisis selon ce que vous
+              apprenez et ce que vous voulez devenir.
             </p>
-            <div className="mb-7 flex flex-wrap gap-2">
-              {CORE_DIMENSIONS.map((item) => (
-                <span key={item} className="tt-chip">
-                  {item}
-                </span>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link to={loggedIn ? "/feed" : "/login"} className="tt-btn tt-btn-brand px-6 py-3 text-sm gap-2">
                 Commencer <ArrowRight size={15} />
               </Link>
-              <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn tt-btn-secondary px-6 py-3 text-sm gap-2">
+              <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn tt-btn-ghost px-6 py-3 text-sm gap-2">
                 <Search size={15} /> Explorer
               </Link>
             </div>
-            <div className="flex flex-wrap items-center gap-2 mt-7">
-              <span className="text-[11px] uppercase tracking-widest text-muted-foreground mr-1">Sources</span>
-              {SOURCE_CHIPS.map(({ icon: Icon, label, tint }) => (
-                <span key={label} className="tt-glass inline-flex items-center gap-1.5 rounded-full pl-1 pr-3 py-1 text-[12px] font-medium">
-                  <span className={`w-5 h-5 rounded-full ${tint} flex items-center justify-center`}>
-                    <Icon size={11} />
-                  </span>
-                  {label}
-                </span>
-              ))}
-            </div>
+            <p className="tt-label mt-9">
+              Sources&nbsp;
+              <span className="font-sans normal-case tracking-normal text-[12px] text-muted-foreground">
+                {SOURCES.join(" · ")}
+              </span>
+            </p>
           </div>
 
-          {/* Illustration */}
-          <div className="relative hidden md:flex items-center justify-center tt-fade-up" aria-hidden>
-            <div className="relative w-[380px] h-[300px]">
-              <div className="absolute inset-x-6 bottom-6 h-[210px] rounded-2xl overflow-hidden border border-border shadow-2xl" style={{ background: "var(--surface)" }}>
-                <div className="h-7 flex items-center gap-1.5 px-3 border-b border-border/60">
-                  <span className="w-2 h-2 rounded-full bg-orange" />
-                  <span className="w-2 h-2 rounded-full bg-white/60" />
-                  <span className="w-2 h-2 rounded-full bg-sky" />
-                </div>
-                <div className="p-4 space-y-3">
-                  <div className="tt-skeleton h-3 w-3/4" style={{ background: "var(--surface-2)" }} />
-                  <div className="tt-skeleton h-3 w-full" style={{ background: "var(--surface-2)" }} />
-                  <div className="tt-skeleton h-3 w-2/3" style={{ background: "var(--surface-2)" }} />
-                  <div className="mt-4 aspect-[16/9] rounded-xl flex items-center justify-center" style={{ background: "var(--orange)" }}>
-                    <Play size={30} className="text-primary-foreground fill-primary-foreground ml-1" />
+          {/* Product preview */}
+          <div className="relative hidden justify-center md:flex tt-fade-up" aria-hidden>
+            <div className="w-full max-w-[400px] overflow-hidden rounded-xl border border-border bg-card shadow-raised">
+              <div className="flex h-8 items-center gap-1.5 border-b border-border px-3.5">
+                <span className="h-2 w-2 rounded-full bg-surface-3" />
+                <span className="h-2 w-2 rounded-full bg-surface-3" />
+                <span className="h-2 w-2 rounded-full bg-surface-3" />
+                <span className="tt-label ml-2 text-[9px]">techtalk / fil</span>
+              </div>
+              <div className="space-y-4 p-5">
+                <div className="flex items-center gap-3">
+                  <span className="tt-logo-mark h-9 w-9 rounded-lg">
+                    <Play size={15} className="fill-primary-foreground" />
+                  </span>
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="tt-skeleton h-2.5 w-2/3" />
+                    <div className="tt-skeleton h-2.5 w-1/3" />
                   </div>
                 </div>
+                <div className="aspect-video rounded-lg bg-surface-2" />
+                <div className="space-y-2">
+                  <div className="tt-skeleton h-2.5 w-full" />
+                  <div className="tt-skeleton h-2.5 w-4/5" />
+                </div>
+                <div className="flex gap-1.5">
+                  <span className="tt-chip text-[10px]">TypeScript</span>
+                  <span className="tt-chip text-[10px]">Backend</span>
+                  <span className="tt-chip tt-chip-active text-[10px]">Enregistré</span>
+                </div>
               </div>
-              {SOURCE_CHIPS.map(({ icon: Icon, tint }, i) => (
-                <span
-                  key={i}
-                  className={`absolute w-11 h-11 rounded-2xl ${tint} flex items-center justify-center shadow-xl border border-white/20`}
-                  style={{
-                    left: [12, 300, 60, 285][i],
-                    top: [0, 30, 210, 155][i],
-                    transform: `rotate(${[-8, 6, 10, -5][i]}deg)`,
-                  }}
-                >
-                  <Icon size={20} />
-                </span>
-              ))}
             </div>
           </div>
         </section>
 
-        <div className="tt-scratch max-w-5xl mx-auto" aria-hidden />
-
         {/* Features */}
-        <section className="max-w-6xl mx-auto px-4 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 tt-stagger">
+        <section className="mx-auto max-w-5xl border-t border-border px-4">
+          <div className="grid gap-x-10 gap-y-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="tt-card p-5 text-center">
-                <span className="tt-brand-tile mx-auto w-11 h-11 rounded-2xl mb-3">
-                  <Icon size={18} />
-                </span>
-                <h3 className="text-[14px] font-bold mb-1.5">{title}</h3>
-                <p className="text-[12px] text-muted-foreground leading-relaxed">{text}</p>
+              <div key={title}>
+                <Icon size={17} className="text-muted-foreground" />
+                <h3 className="mt-4 text-[14px] font-bold">{title}</h3>
+                <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted-foreground">{text}</p>
               </div>
             ))}
           </div>
@@ -201,14 +150,14 @@ export function LandingScreen() {
 
         {/* Popular videos (only when logged in — the API is authenticated) */}
         {popular.length > 0 && (
-          <section className="max-w-6xl mx-auto px-4 py-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-extrabold tracking-tight">Vidéos populaires</h2>
+          <section className="mx-auto max-w-5xl border-t border-border px-4 py-12">
+            <div className="mb-5 flex items-baseline justify-between">
+              <h2 className="text-lg font-bold tracking-tight">Vidéos populaires</h2>
               <Link to="/explore" className="text-[13px] font-semibold text-primary hover:underline">
-                Voir tout →
+                Tout voir
               </Link>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 tt-stagger">
+            <div className="grid grid-cols-2 gap-4 tt-stagger lg:grid-cols-4">
               {popular.map((item) => (
                 <VideoTile key={item.id} item={item} onOpen={() => navigate(`/content/${item.id}`, { state: { item } })} />
               ))}
@@ -217,18 +166,10 @@ export function LandingScreen() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/60 mt-10">
-        <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <Brand size={28} radius="10px" glyph={13} />
-            <div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Apprends. Explore. Progresse.</p>
-            </div>
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            Contenu agrégé (YouTube, Reddit, X, GitHub, etc.) · Recommandations par règles · Communauté · Thème clair / sombre · Mobile &amp; desktop
-          </p>
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 px-4 py-7 md:flex-row">
+          <Brand size={26} radius="8px" glyph={12} />
+          <p className="text-[11px] text-muted-foreground">Apprends. Explore. Progresse.</p>
         </div>
       </footer>
     </div>

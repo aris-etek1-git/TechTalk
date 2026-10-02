@@ -20,7 +20,7 @@ interface CampusLifeScreenProps {
 function formatWhen(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString("fr-FR", {
     weekday: "short",
     day: "2-digit",
     month: "short",
@@ -31,7 +31,7 @@ function formatWhen(value: string): string {
 
 function seatsLabel(event: CampusEvent): string {
   if (event.status === "cancelled") return "Annulé";
-  if (event.seatsLeft === null) return `${event.goingCount} going`;
+  if (event.seatsLeft === null) return `${event.goingCount} inscrits`;
   return event.seatsLeft === 0 ? "Complet" : `${event.seatsLeft} places restantes`;
 }
 
@@ -113,7 +113,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
       toast.error(result.error);
       return;
     }
-    toast.success(`You joined ${group.name}`);
+    toast.success(`Vous avez rejoint ${group.name}`);
     await refreshGroups(campusId, groupQuery.trim());
   }
 
@@ -171,7 +171,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
   async function handleCreateEvent() {
     if (!campusId) return;
     if (!eventTitle.trim() || !eventLocation.trim() || !eventStartsAt) {
-      toast.error("Title, place and date are required.");
+      toast.error("Titre, lieu et date requis.");
       return;
     }
     const result = await api.createEvent(campusId, {
@@ -198,8 +198,8 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
         <div className="mx-auto max-w-2xl space-y-4 pb-8">
           <div className="tt-skeleton h-8 w-36 rounded-full" />
           <div className="tt-skeleton h-12 rounded-full" />
-          <div className="tt-skeleton h-28 rounded-2xl" />
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <div className="tt-skeleton h-28 rounded-xl" />
+          <p className="text-sm text-muted-foreground">Chargement…</p>
         </div>
       </div>
     );
@@ -218,9 +218,9 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
           </button>
           <div className="tt-card tt-ring-brand p-8 text-center">
             <div className="tt-glass tt-btn mx-auto mb-4 h-14 w-14 rounded-full text-muted-foreground">
-              <Users size={22} className="text-primary" />
+              <Users size={22} className="text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground">Join a campus to meet its students.</p>
+            <p className="text-sm text-muted-foreground">Rejoignez un campus pour rencontrer ses étudiants.</p>
           </div>
         </div>
       </div>
@@ -228,7 +228,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
   }
 
   const groupedIds = new Set(myGroups.map((group) => group.id));
-  const sectionTitle = "text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground";
+  const sectionTitle = "tt-label";
   const inputClass = "tt-field w-full px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground";
 
   return (
@@ -249,7 +249,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
               onClick={() => setCampusId(campus.id)}
               className={`rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
                 campus.id === campusId
-                  ? "border-transparent bg-primary text-primary-foreground shadow-glow"
+                  ? "border-transparent bg-primary text-primary-foreground"
                   : "border-border bg-surface-2 text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -278,7 +278,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
             <section className="space-y-4">
               <h2 className={sectionTitle}>My groups · {myGroups.length}</h2>
               {myGroups.length === 0 && (
-                <p className="text-sm text-muted-foreground">You have not joined a group yet.</p>
+                <p className="text-sm text-muted-foreground">Vous n’avez pas encore rejoint de groupe.</p>
               )}
               <div className="tt-stagger grid grid-cols-1 gap-3 md:grid-cols-2">
                 {myGroups.map((group) => (
@@ -290,7 +290,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                           {group.campus?.name ?? "campus"} · {group.memberCount} members
                         </p>
                       </div>
-                      <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
+                      <span className="inline-flex shrink-0 items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-secondary-foreground">
                         {group.myRole}
                       </span>
                     </div>
@@ -299,7 +299,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                       disabled={busyId === group.id}
                       className="mt-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
                     >
-                      Leave
+                      Quitter
                     </button>
                   </div>
                 ))}
@@ -351,7 +351,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
               </div>
 
               {campusGroups.length === 0 && (
-                <p className="text-sm text-muted-foreground">No group here yet — start one below.</p>
+                <p className="text-sm text-muted-foreground">Aucun groupe ici pour l’instant — créez-en un ci-dessous.</p>
               )}
             </section>
 
@@ -383,7 +383,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                   className="tt-btn tt-btn-brand shrink-0 gap-1.5 px-4 py-2.5 text-sm"
                 >
                   <Plus size={13} />
-                  Create
+                  Créer
                 </button>
               </div>
             </section>
@@ -408,7 +408,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                       <span
                         aria-hidden="true"
                         className="mt-0.5 w-1 shrink-0 self-stretch rounded-full"
-                        style={{ background: "var(--sky)" }}
+                        style={{ background: "var(--primary)" }}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-3">
@@ -420,7 +420,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                               {event.location}
                             </p>
                           </div>
-                          <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
+                          <span className="inline-flex shrink-0 items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-secondary-foreground">
                             {seatsLabel(event)}
                           </span>
                         </div>
@@ -431,24 +431,24 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                             disabled={busyId === event.id || event.status === "cancelled"}
                             className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
                               event.myRsvp === "going"
-                                ? "bg-primary text-primary-foreground shadow-glow"
+                                ? "bg-primary text-primary-foreground"
                                 : "border border-border bg-surface-2 text-muted-foreground hover:text-foreground"
                             }`}
                           >
                             <Check size={12} />
-                            Going
+                            Je viens
                           </button>
                           <button
                             onClick={() => handleRsvp(event, "interested")}
                             disabled={busyId === event.id || event.status === "cancelled"}
                             className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
                               event.myRsvp === "interested"
-                                ? "bg-primary text-primary-foreground shadow-glow"
+                                ? "bg-primary text-primary-foreground"
                                 : "border border-border bg-surface-2 text-muted-foreground hover:text-foreground"
                             }`}
                           >
                             <Ticket size={12} />
-                            Interested
+                            Ça m’intéresse
                           </button>
                           {userId && event.createdBy === userId && event.status === "scheduled" && (
                             <button
@@ -456,7 +456,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                               disabled={busyId === event.id}
                               className="text-xs text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
                             >
-                              Cancel event
+                              Annuler l’événement
                             </button>
                           )}
                         </div>
@@ -467,12 +467,12 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
               </div>
 
               {campusEvents.length === 0 && (
-                <p className="text-sm text-muted-foreground">Nothing scheduled yet.</p>
+                <p className="text-sm text-muted-foreground">Rien de prévu pour l’instant.</p>
               )}
             </section>
 
             <section className="space-y-4">
-              <h2 className={sectionTitle}>Mine · {myEvents.length}</h2>
+              <h2 className={sectionTitle}>Mes inscriptions · {myEvents.length}</h2>
               <div className="tt-stagger space-y-3">
                 {myEvents.map((event) => (
                   <div key={event.id} className="tt-card flex items-center justify-between gap-3 p-4">
@@ -482,13 +482,13 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                         {event.campus?.name ?? "campus"} · {formatWhen(event.startsAt)}
                       </p>
                     </div>
-                    <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
-                      {event.myRsvp ?? (event.createdBy === userId ? "hosting" : "—")}
+                    <span className="inline-flex shrink-0 items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-secondary-foreground">
+                      {event.myRsvp === "going" ? "Inscrit" : event.myRsvp === "interested" ? "Intéressé" : event.createdBy === userId ? "Hôte" : "—"}
                     </span>
                   </div>
                 ))}
               </div>
-              {myEvents.length === 0 && <p className="text-sm text-muted-foreground">No event linked to you yet.</p>}
+              {myEvents.length === 0 && <p className="text-sm text-muted-foreground">Aucun événement lié à vous pour l’instant.</p>}
             </section>
 
             <section className="tt-card space-y-3 p-5">
@@ -526,7 +526,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                 className="tt-btn tt-btn-brand w-full gap-1.5 px-4 py-2.5 text-sm"
               >
                 <Plus size={13} />
-                Create event
+                Créer l’événement
               </button>
             </section>
           </>

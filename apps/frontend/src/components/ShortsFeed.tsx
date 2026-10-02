@@ -74,7 +74,7 @@ export function ShortsFeed({ items, savedIds, likedIds, onLoadMore, onShare, onS
             key={item.id}
             className="h-full snap-start snap-always flex items-center justify-center px-3 py-3"
           >
-            <div className="relative h-full w-full max-w-[430px] overflow-hidden rounded-[28px] border border-glass-border bg-black shadow-raised">
+            <div className="relative h-full w-full max-w-[430px] overflow-hidden rounded-2xl border border-border bg-black shadow-raised">
               {isActive && item.youtubeId ? (
                 <iframe
                   title={item.title}
@@ -96,7 +96,7 @@ export function ShortsFeed({ items, savedIds, likedIds, onLoadMore, onShare, onS
                     loading={i > 1 ? "lazy" : "eager"}
                   />
                   <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="tt-glass-strong flex h-14 w-14 items-center justify-center rounded-full">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/55">
                       <Play size={22} className="ml-0.5" />
                     </span>
                   </span>
@@ -108,10 +108,10 @@ export function ShortsFeed({ items, savedIds, likedIds, onLoadMore, onShare, onS
                 <RailButton
                   label={formatCount(item.likes + (isLiked ? 1 : 0))}
                   active={isLiked}
-                  activeClass="text-orange"
+                  activeClass="text-primary"
                   onClick={() => onLike(item)}
                 >
-                  <Heart size={20} className={isLiked ? "fill-orange" : ""} />
+                  <Heart size={20} className={isLiked ? "fill-primary" : ""} />
                 </RailButton>
                 <RailButton label={formatCount(item.comments)} onClick={() => onOpen(item)}>
                   <MessageCircle size={20} />
@@ -119,10 +119,10 @@ export function ShortsFeed({ items, savedIds, likedIds, onLoadMore, onShare, onS
                 <RailButton
                   label={isSaved ? "Sauvé" : "Sauver"}
                   active={isSaved}
-                  activeClass="text-orange"
+                  activeClass="text-primary"
                   onClick={() => onSave(item)}
                 >
-                  <Bookmark size={20} className={isSaved ? "fill-orange" : ""} />
+                  <Bookmark size={20} className={isSaved ? "fill-primary" : ""} />
                 </RailButton>
                 <RailButton label="Partager" onClick={() => onShare(item)}>
                   <Share2 size={20} />

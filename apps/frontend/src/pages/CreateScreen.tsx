@@ -100,7 +100,7 @@ export function CreateScreen() {
   return (
     <div className="flex-1 overflow-y-auto tt-scrollbar">
       <div className="max-w-2xl mx-auto px-4 py-6 tt-fade-up">
-        <h1 className="text-xl font-extrabold tracking-tight mb-5">Créer un post</h1>
+        <h1 className="text-xl font-bold tracking-tight mb-5">Créer un post</h1>
 
         {/* Type tabs */}
         <div className="grid grid-cols-4 gap-2 mb-6">

@@ -63,7 +63,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
       toast.error(result.error);
       return;
     }
-    toast.success(`You joined ${campus.organization.name} — ${campus.name}`);
+    toast.success(`Vous avez rejoint ${campus.organization.name} — ${campus.name}`);
     setResults((prev) => prev.filter((c) => c.id !== campus.id));
     await loadMine();
   }
@@ -91,22 +91,22 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
         </button>
 
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            My campuses · {mine.length}
+          <h2 className="tt-label">
+            Mes campus · {mine.length}
           </h2>
 
           {loadingMine && (
             <div className="space-y-3">
-              <div className="tt-skeleton h-24 rounded-2xl" />
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <div className="tt-skeleton h-24 rounded-xl" />
+              <p className="text-sm text-muted-foreground">Chargement…</p>
             </div>
           )}
 
           {error && !loadingMine && (
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4">
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-4">
               <p className="text-sm text-foreground">{error}</p>
               <button onClick={loadMine} className="tt-btn tt-btn-ghost shrink-0 px-4 py-2 text-sm text-primary">
-                Retry
+                Réessayer
               </button>
             </div>
           )}
@@ -114,10 +114,10 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
           {!loadingMine && !error && mine.length === 0 && (
             <div className="tt-card tt-ring-brand p-8 text-center">
               <div className="tt-glass tt-btn mx-auto mb-4 h-14 w-14 rounded-full text-muted-foreground">
-                <GraduationCap size={22} className="text-primary" />
+                <GraduationCap size={22} className="text-muted-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">
-                You have not joined a campus yet. Search for your school below.
+                Vous n’avez pas encore rejoint de campus. Cherchez votre école ci-dessous.
               </p>
             </div>
           )}
@@ -133,7 +133,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
                       {campus.city ? ` · ${campus.city}` : ""}
                     </p>
                   </div>
-                  <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
+                  <span className="inline-flex shrink-0 items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-secondary-foreground">
                     {campus.myRole}
                   </span>
                 </div>
@@ -146,7 +146,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
                   className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
                 >
                   <LogOut size={12} />
-                  Leave
+                  Quitter
                 </button>
               </div>
             ))}
@@ -154,7 +154,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Découvrir</h2>
+          <h2 className="tt-label">Découvrir</h2>
           <div className="relative">
             <Search
               size={15}
@@ -168,11 +168,11 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
             />
           </div>
 
-          {loadingResults && <p className="text-sm text-muted-foreground">Searching…</p>}
+          {loadingResults && <p className="text-sm text-muted-foreground">Recherche…</p>}
 
           {!loadingResults && query.trim().length >= 2 && results.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              No campus matches “{query.trim()}”. Private campuses are hidden until you join them.
+              Aucun campus ne correspond à « {query.trim()} ». Les campus privés restent invisibles tant que vous ne les rejoignez pas.
             </p>
           )}
 

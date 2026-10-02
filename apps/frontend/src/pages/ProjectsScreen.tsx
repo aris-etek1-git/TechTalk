@@ -90,12 +90,8 @@ export function ProjectsScreen() {
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <header className="tt-fade-up">
-            <p className="tt-label mb-3">Projets / preuves de travail</p>
-            <h1 className="text-3xl font-extrabold md:text-5xl">Les idées deviennent visibles.</h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Découvrez des projets par technologie, difficulté et intention. Pas de classement de génie :
-              des traces, des choix et des choses construites.
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Les idées deviennent visibles.</h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">Des projets réels, par technologie et par intention.</p>
           </header>
           <button className="tt-btn tt-btn-brand shrink-0 gap-2 px-4 py-2.5 text-xs">
             <Plus size={14} /> Ajouter un projet
@@ -120,7 +116,7 @@ export function ProjectsScreen() {
           <div className="space-y-8">
             {groups.map(([label, items]) => (
               <section key={label}>
-                <h2 className="tt-label mb-4 text-accent">{label}</h2>
+                <h2 className="tt-label mb-4">{label}</h2>
                 <ProjectGrid items={items} />
               </section>
             ))}
@@ -148,8 +144,8 @@ function ProjectGrid({ items }: { items: Project[] }) {
             </span>
             <span className="tt-chip text-[10px]">{project.status}</span>
           </div>
-          <h3 className="mt-5 text-lg font-extrabold">{project.name}</h3>
-          <p className="mt-1 text-xs font-semibold text-accent">par {project.author}</p>
+          <h3 className="mt-5 text-lg font-bold">{project.name}</h3>
+          <p className="mt-1 text-xs text-muted-foreground">par {project.author}</p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{project.description}</p>
           <div className="mt-5 flex flex-wrap gap-1.5">
             {project.technologies.map((tag) => (

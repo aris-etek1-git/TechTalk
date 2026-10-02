@@ -28,7 +28,7 @@ export function OnboardingScreen() {
         <span className="tt-chip mb-3">
           <Sparkles size={11} className="text-primary" /> Dernière étape
         </span>
-        <h1 className="text-2xl font-extrabold tracking-tight mb-2">Qu'est-ce qui vous passionne ?</h1>
+        <h1 className="text-2xl font-bold tracking-tight mb-2">Qu'est-ce qui vous passionne ?</h1>
         <p className="text-[13px] text-muted-foreground mb-6">
           Sélectionnez vos centres d'intérêt : ils personnalisent votre flux « Pour toi » et l'onglet « Abonnements ».
         </p>

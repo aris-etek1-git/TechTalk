@@ -140,7 +140,7 @@ export function ProfileScreen() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 justify-center sm:justify-start">
-                      <h1 className="text-xl font-extrabold tracking-tight truncate">{user?.name || "Tech Talker"}</h1>
+                      <h1 className="text-xl font-bold tracking-tight truncate">{user?.name || "Tech Talker"}</h1>
                       <button
                         onClick={() => {
                           setName(user?.name || "");
@@ -153,21 +153,18 @@ export function ProfileScreen() {
                     </div>
                   )}
                   <p className="text-[12px] text-muted-foreground mt-1">{user?.email}</p>
-                  <p className="text-[13px] text-muted-foreground mt-2 max-w-sm">
-                    Passionné de tech, d'IA et de développement. Toujours en apprentissage.
-                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Vus", value: readIds.size },
+                  { label: "Historique", value: readIds.size },
                   { label: "Favoris", value: saved.length },
                   { label: "Jours actifs", value: readDates.length },
                 ].map((s) => (
                   <div key={s.label} className="tt-card p-4 text-center">
-                    <p className="text-xl font-extrabold tt-accent-violet">{s.value}</p>
-                    <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-1">{s.label}</p>
+                    <p className="text-xl font-bold">{s.value}</p>
+                    <p className="tt-label mt-1">{s.label}</p>
                   </div>
                 ))}
               </div>

@@ -27,10 +27,10 @@ import { AiScreen } from "../pages/AiScreen";
 function BootSpinner() {
   return (
     <div className="min-h-dvh tt-shell flex flex-col items-center justify-center gap-5">
-      <span className="tt-logo-mark w-12 h-12 rounded-2xl tt-pop">
+      <span className="tt-logo-mark w-12 h-12 rounded-xl tt-pop">
         <Wifi size={20} />
       </span>
-      <span className="w-28 h-[3px] rounded-full opacity-80" style={{ background: "var(--orange)" }} />
+      <span className="w-28 h-[3px] rounded-full opacity-80" style={{ background: "var(--primary)" }} />
     </div>
   );
 }
