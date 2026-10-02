@@ -22,7 +22,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
     try {
       setMine(await api.getMyCampuses());
     } catch (err: any) {
-      setError(err.message || "Failed to load your campuses");
+      setError(err.message || "Impossible de charger vos campus");
     } finally {
       setLoadingMine(false);
     }
@@ -45,7 +45,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
       try {
         setResults(await api.getCampuses({ search }));
       } catch (err: any) {
-        toast.error(err.message || "Search failed");
+        toast.error(err.message || "Recherche impossible");
       } finally {
         setLoadingResults(false);
       }
@@ -87,7 +87,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
           className="-ml-2 inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
         >
           <ArrowLeft size={18} />
-          <span className="text-sm">Back to Feed</span>
+          <span className="text-sm">Retour au fil</span>
         </button>
 
         <section className="space-y-4">
@@ -154,7 +154,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Discover</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Découvrir</h2>
           <div className="relative">
             <Search
               size={15}
@@ -163,7 +163,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="School or city — Epitech, Lyon…"
+              placeholder="École ou ville — Epitech, Lyon…"
               className="tt-field w-full py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -197,7 +197,7 @@ export function CampusScreen({ onBack }: CampusScreenProps) {
                     className="tt-btn tt-btn-brand shrink-0 gap-1.5 px-4 py-2 text-xs"
                   >
                     {campus.myRole ? <Users size={12} /> : <UserPlus size={12} />}
-                    {busyId === campus.id ? "…" : "Join"}
+                    {busyId === campus.id ? "…" : "Rejoindre"}
                   </button>
                 </div>
               ))}

@@ -7,15 +7,17 @@ import { SourceBadge } from "./SourceBadge";
 interface FeedCardProps {
   item: ContentItem;
   isSaved: boolean;
+  isLiked: boolean;
   onOpen: () => void;
   onSave: () => void;
+  onLike: () => void;
   onShare?: () => void;
 }
 
-export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardProps) {
+export function FeedCard({ item, isSaved, isLiked, onOpen, onSave, onLike, onShare }: FeedCardProps) {
   const [imgFailed, setImgFailed] = useState(false);
-  const [liked, setLiked] = useState(false);
   const [pop, setPop] = useState(false);
+  const [likePop, setLikePop] = useState(false);
 
   const initials = item.author
     .split(/\s+/)
@@ -30,15 +32,22 @@ export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardPro
     window.setTimeout(() => setPop(false), 320);
   };
 
+  const handleLike = () => {
+    onLike();
+    setLikePop(true);
+    window.setTimeout(() => setLikePop(false), 320);
+  };
+
   return (
     <article className="tt-card tt-card-hover p-4 flex flex-col sm:flex-row gap-4">
+      <span className="tt-claw tt-claw-sm tt-claw-corner tt-claw-hover tt-claw-ghost" aria-hidden />
       {/* Thumbnail */}
       <div
         className="relative sm:w-72 md:w-80 flex-shrink-0 aspect-[16/9] rounded-2xl bg-surface-2 overflow-hidden cursor-pointer group"
         onClick={onOpen}
       >
         {imgFailed ? (
-          <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--blue-soft)" }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ background: "var(--sky-soft)" }}>
             <Play size={28} className="text-muted-foreground/50" />
           </div>
         ) : (
@@ -71,10 +80,17 @@ export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardPro
           <span className="text-[13px] font-semibold truncate">{item.author}</span>
           <SourceBadge source={item.source} />
           <div className="ml-auto flex items-center gap-3 text-[12px] text-muted-foreground flex-shrink-0">
-            <span className="flex items-center gap-1">
-              <Heart size={13} className="text-primary fill-primary/20" />
-              {formatCount(item.likes + (liked ? 1 : 0))}
-            </span>
+            <button
+              onClick={handleLike}
+              aria-pressed={isLiked}
+              aria-label={isLiked ? "Retirer le like" : "Liker"}
+              className={`tt-btn flex items-center gap-1 p-1 -mr-1 ${likePop ? "tt-pop" : ""} ${
+                isLiked ? "text-orange" : "hover:text-foreground"
+              }`}
+            >
+              <Heart size={13} className={isLiked ? "fill-orange" : "fill-orange/20"} />
+              {formatCount(item.likes + (isLiked ? 1 : 0))}
+            </button>
             <span className="hidden sm:flex items-center gap-1">
               <MessageCircle size={13} />
               {formatCount(item.comments)}
@@ -96,7 +112,7 @@ export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardPro
           {(item.categories && item.categories.length > 0 ? item.categories : [item.category])
             .slice(0, 4)
             .map((tag) => (
-              <span key={tag} className="text-[11px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+              <span key={tag} className="tt-chip text-[11px]">
                 #{tag.toLowerCase().replace(/\s+/g, "")}
               </span>
             ))}
@@ -112,7 +128,7 @@ export function FeedCard({ item, isSaved, onOpen, onSave, onShare }: FeedCardPro
               onClick={handleSave}
               aria-label={isSaved ? "Retirer des favoris" : "Enregistrer"}
               className={`tt-btn p-1.5 ${pop ? "tt-pop" : ""} ${
-                isSaved ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-surface-2"
+                isSaved ? "text-orange bg-orange/10" : "text-muted-foreground hover:text-foreground hover:bg-surface-2"
               }`}
             >
               {isSaved ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}

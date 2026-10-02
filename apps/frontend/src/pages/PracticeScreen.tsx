@@ -1,12 +1,14 @@
-import { ArrowUpRight, BrainCircuit, Code2, Database, LockKeyhole, Server, Trophy } from "lucide-react";
+import { ArrowUpRight, BrainCircuit, Code2, Cpu, Database, LockKeyhole, Server, Sparkles, Trophy } from "lucide-react";
 
 const TRACKS = [
-  { title: "Algorithms", level: "Fondations", icon: BrainCircuit, color: "text-primary", platform: "LeetCode · Codeforces", tasks: "240 exercices", url: "https://leetcode.com/" },
+  { title: "Algorithmique", level: "Fondations", icon: BrainCircuit, color: "text-primary", platform: "LeetCode · Codeforces", tasks: "240 exercices", url: "https://leetcode.com/" },
   { title: "Frontend", level: "Construire", icon: Code2, color: "text-accent", platform: "Frontend Mentor · GitHub", tasks: "68 challenges", url: "https://github.com/explore" },
   { title: "Backend", level: "Systèmes", icon: Server, color: "text-accent", platform: "GitHub · docs", tasks: "42 parcours", url: "https://github.com/explore" },
-  { title: "Data & AI", level: "Explorer", icon: Database, color: "text-primary", platform: "Kaggle · Papers", tasks: "31 notebooks" },
-  { title: "Cybersecurity", level: "Défense", icon: LockKeyhole, color: "text-accent", platform: "TryHackMe · CTF", tasks: "19 rooms" },
-  { title: "Competitions", level: "Se mesurer", icon: Trophy, color: "text-primary", platform: "Codeforces · Kaggle", tasks: "12 événements" },
+  { title: "IA", level: "Modéliser", icon: Sparkles, color: "text-primary", platform: "Kaggle · Papers with Code", tasks: "24 notebooks", url: "https://www.kaggle.com/" },
+  { title: "Données", level: "Explorer", icon: Database, color: "text-primary", platform: "Kaggle · DuckDB", tasks: "31 notebooks", url: "https://www.kaggle.com/" },
+  { title: "Cybersécurité", level: "Défense", icon: LockKeyhole, color: "text-accent", platform: "TryHackMe · CTF", tasks: "19 rooms", url: "https://tryhackme.com/" },
+  { title: "Systèmes", level: "Bas niveau", icon: Cpu, color: "text-accent", platform: "Exercism · OS dev", tasks: "27 exercices", url: "https://exercism.org/" },
+  { title: "Compétitions", level: "Se mesurer", icon: Trophy, color: "text-primary", platform: "Codeforces · Kaggle", tasks: "12 événements", url: "https://codeforces.com/" },
 ];
 
 export function PracticeScreen() {
@@ -14,7 +16,7 @@ export function PracticeScreen() {
     <div className="flex-1 overflow-y-auto tt-scrollbar">
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
         <header className="mb-8 max-w-2xl tt-fade-up">
-          <p className="tt-label mb-3">Practice / terrain d'entraînement</p>
+          <p className="tt-label mb-3">Pratique / terrain d’entraînement</p>
           <h1 className="text-3xl font-extrabold md:text-5xl">Apprendre devient concret.</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Des exercices, des challenges et des plateformes externes rangés par intention. TechTalk vous aide à choisir le prochain geste, pas à tout héberger.</p>
         </header>
@@ -35,9 +37,9 @@ export function PracticeScreen() {
         <section className="mt-4 tt-card border-accent/30 p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div><p className="tt-label text-accent">LeetCode / session rapide</p><h2 className="mt-2 text-xl font-extrabold">Résoudre un problème, puis comprendre pourquoi.</h2><p className="mt-2 text-sm text-muted-foreground">Filtrez votre prochain exercice par difficulté et gardez la trace de votre progression dans TechTalk.</p></div>
-            <a href="https://leetcode.com/problemset/" target="_blank" rel="noreferrer" className="tt-btn tt-btn-blue shrink-0 gap-2 px-4 py-2.5 text-xs">Ouvrir LeetCode <ArrowUpRight size={13} /></a>
+            <a href="https://leetcode.com/problemset/" target="_blank" rel="noreferrer" className="tt-btn tt-btn-secondary shrink-0 gap-2 px-4 py-2.5 text-xs">Ouvrir LeetCode <ArrowUpRight size={13} /></a>
           </div>
-          <div className="mt-5 flex flex-wrap gap-2"><span className="tt-chip tt-chip-active">Easy · 84</span><span className="tt-chip">Medium · 126</span><span className="tt-chip">Hard · 30</span><span className="tt-chip">Arrays</span><span className="tt-chip">Graphs</span></div>
+          <div className="mt-5 flex flex-wrap gap-2"><span className="tt-chip tt-chip-active">Facile · 84</span><span className="tt-chip">Moyen · 126</span><span className="tt-chip">Difficile · 30</span><span className="tt-chip">Tableaux</span><span className="tt-chip">Graphes</span></div>
         </section>
       </div>
     </div>

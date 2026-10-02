@@ -157,7 +157,7 @@ export const api = {
 
   handleSessionExpired(): void {
     this.logout();
-    toast.error("Your session has expired. Please sign in again.");
+    toast.error("Votre session a expiré. Connectez-vous à nouveau.");
     setTimeout(() => window.location.reload(), 1500);
   },
 
@@ -244,11 +244,11 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Registration failed' };
+        return { success: false, error: data.error || 'Inscription impossible' };
       }
       return { success: true, user: data.user };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -263,13 +263,13 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Login failed' };
+        return { success: false, error: data.error || 'Connexion impossible' };
       }
       this.setToken(data.token);
       this.setUser(data.user);
       return { success: true, token: data.token, user: data.user };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -284,13 +284,13 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Google Sign-In failed' };
+        return { success: false, error: data.error || 'Échec de la connexion Google' };
       }
       this.setToken(data.token);
       this.setUser(data.user);
       return { success: true, token: data.token, user: data.user };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -305,12 +305,12 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to update profile' };
+        return { success: false, error: data.error || 'Impossible de mettre à jour le profil' };
       }
       this.setUser(data.user);
       return { success: true, user: data.user };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -319,12 +319,12 @@ export const api = {
       const response = await this.fetchWithAuth('/auth/me');
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to fetch profile' };
+        return { success: false, error: data.error || 'Impossible de charger le profil' };
       }
       this.setUser(data.user);
       return { success: true, user: data.user };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -362,11 +362,11 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to add bookmark' };
+        return { success: false, error: data.error || 'Impossible d’enregistrer le favori' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -377,11 +377,54 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to delete bookmark' };
+        return { success: false, error: data.error || 'Impossible de retirer le favori' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
+    }
+  },
+
+  async getLikes(): Promise<string[]> {
+    const response = await this.fetchWithAuth('/content/likes');
+    if (!response.ok) {
+      throw new Error(`Impossible de récupérer les likes : ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data.likedIds ?? [];
+  },
+
+  async addLike(contentId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth('/content/likes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contentId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Impossible d’enregistrer le like' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erreur réseau' };
+    }
+  },
+
+  async deleteLike(contentId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const response = await this.fetchWithAuth(`/content/likes/${contentId}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Impossible de retirer le like' };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -396,11 +439,11 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to create content' };
+        return { success: false, error: data.error || 'Impossible de créer le contenu' };
       }
       return { success: true, content: data.content };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -495,7 +538,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -504,11 +547,11 @@ export const api = {
       const response = await this.fetchWithAuth(`/campuses/${campusId}/membership`, { method: 'DELETE' });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to leave this campus' };
+        return { success: false, error: data.error || 'Impossible de quitter ce campus' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -539,7 +582,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -585,7 +628,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -599,7 +642,7 @@ export const api = {
       }
       return { success: true, url: data.url, fileName: data.fileName };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -612,11 +655,11 @@ export const api = {
       });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to update the document' };
+        return { success: false, error: data.error || 'Impossible de mettre à jour le document' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -625,11 +668,11 @@ export const api = {
       const response = await this.fetchWithAuth(`/documents/${documentId}`, { method: 'DELETE' });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to remove the document' };
+        return { success: false, error: data.error || 'Impossible de supprimer le document' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -669,7 +712,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -682,7 +725,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -691,11 +734,11 @@ export const api = {
       const response = await this.fetchWithAuth(`/groups/${groupId}/membership`, { method: 'DELETE' });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to leave this group' };
+        return { success: false, error: data.error || 'Impossible de quitter ce groupe' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -733,7 +776,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -750,7 +793,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -759,11 +802,11 @@ export const api = {
       const response = await this.fetchWithAuth(`/events/${eventId}/rsvp`, { method: 'DELETE' });
       const data = await response.json();
       if (!response.ok) {
-        return { success: false, error: data.error || 'Failed to remove your response' };
+        return { success: false, error: data.error || 'Impossible de retirer votre réponse' };
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   },
 
@@ -780,7 +823,7 @@ export const api = {
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error' };
+      return { success: false, error: err.message || 'Erreur réseau' };
     }
   }
 };

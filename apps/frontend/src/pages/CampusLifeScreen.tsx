@@ -30,9 +30,9 @@ function formatWhen(value: string): string {
 }
 
 function seatsLabel(event: CampusEvent): string {
-  if (event.status === "cancelled") return "Cancelled";
+  if (event.status === "cancelled") return "Annulé";
   if (event.seatsLeft === null) return `${event.goingCount} going`;
-  return event.seatsLeft === 0 ? "Full" : `${event.seatsLeft} seats left`;
+  return event.seatsLeft === 0 ? "Complet" : `${event.seatsLeft} places restantes`;
 }
 
 export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
@@ -86,7 +86,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
         setUserId(api.getUser()?.id ?? null);
         if (joined.length > 0) setCampusId(joined[0].id);
       } catch (err: any) {
-        if (!cancelled) toast.error(err.message || "Failed to load your campuses");
+        if (!cancelled) toast.error(err.message || "Impossible de charger vos campus");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -100,7 +100,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
     if (loading) return;
     const timer = window.setTimeout(() => {
       const run = view === "groups" ? refreshGroups(campusId, groupQuery.trim()) : refreshEvents(campusId, includePast);
-      run.catch((err: any) => toast.error(err.message || "Load failed"));
+      run.catch((err: any) => toast.error(err.message || "Chargement impossible"));
     }, 350);
     return () => window.clearTimeout(timer);
   }, [view, campusId, groupQuery, includePast, loading, refreshGroups, refreshEvents]);
@@ -139,7 +139,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
       toast.error(result.error);
       return;
     }
-    toast.success("Group created — you host it.");
+    toast.success("Groupe créé — vous l’animez.");
     setGroupName("");
     setGroupTopic("");
     setGroupCapacity("");
@@ -184,7 +184,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
       toast.error(result.error);
       return;
     }
-    toast.success("Event created.");
+    toast.success("Événement créé.");
     setEventTitle("");
     setEventLocation("");
     setEventStartsAt("");
@@ -214,7 +214,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
             className="-ml-2 inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
           >
             <ArrowLeft size={18} />
-            <span className="text-sm">Back</span>
+            <span className="text-sm">Retour</span>
           </button>
           <div className="tt-card tt-ring-brand p-8 text-center">
             <div className="tt-glass tt-btn mx-auto mb-4 h-14 w-14 rounded-full text-muted-foreground">
@@ -239,7 +239,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
           className="-ml-2 inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
         >
           <ArrowLeft size={18} />
-          <span className="text-sm">Back</span>
+          <span className="text-sm">Retour</span>
         </button>
 
         <div className="flex flex-wrap gap-2">
@@ -268,7 +268,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
               }`}
             >
               {key === "groups" ? <Users size={13} /> : <Calendar size={13} />}
-              {key === "groups" ? "Groups" : "Events"}
+              {key === "groups" ? "Groupes" : "Événements"}
             </button>
           ))}
         </div>
@@ -307,7 +307,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
             </section>
 
             <section className="space-y-4">
-              <h2 className={sectionTitle}>Groups on this campus</h2>
+              <h2 className={sectionTitle}>Groupes du campus</h2>
               <div className="relative">
                 <Search
                   size={15}
@@ -316,7 +316,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                 <input
                   value={groupQuery}
                   onChange={(event) => setGroupQuery(event.target.value)}
-                  placeholder="Search a group…"
+                  placeholder="Rechercher un groupe…"
                   className="tt-field w-full py-3 pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -344,7 +344,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                         className="tt-btn tt-btn-brand shrink-0 gap-1.5 px-4 py-2 text-xs"
                       >
                         <UserPlus size={12} />
-                        {group.capacity !== null && group.memberCount >= group.capacity ? "Full" : "Join"}
+                        {group.capacity !== null && group.memberCount >= group.capacity ? "Complet" : "Rejoindre"}
                       </button>
                     </div>
                   ))}
@@ -356,18 +356,18 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
             </section>
 
             <section className="tt-card space-y-3 p-5">
-              <h3 className={sectionTitle}>New group</h3>
+              <h3 className={sectionTitle}>Nouveau groupe</h3>
               <input
                 value={groupName}
                 onChange={(event) => setGroupName(event.target.value)}
-                placeholder="Revision — System Administration"
+                placeholder="Révisions — Administration système"
                 className={inputClass}
               />
               <div className="flex gap-2">
                 <input
                   value={groupTopic}
                   onChange={(event) => setGroupTopic(event.target.value)}
-                  placeholder="topic (revision, sport…)"
+                  placeholder="thème (révisions, sport…)"
                   className={`${inputClass} flex-1`}
                 />
                 <input
@@ -392,12 +392,12 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
           <>
             <section className="space-y-4">
               <div className="flex items-center justify-between gap-2">
-                <h2 className={sectionTitle}>On this campus</h2>
+                <h2 className={sectionTitle}>Sur ce campus</h2>
                 <button
                   onClick={() => setIncludePast((prev) => !prev)}
                   className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
                 >
-                  {includePast ? "Upcoming only" : "Include past"}
+                  {includePast ? "À venir uniquement" : "Inclure le passé"}
                 </button>
               </div>
 
@@ -408,7 +408,7 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
                       <span
                         aria-hidden="true"
                         className="mt-0.5 w-1 shrink-0 self-stretch rounded-full"
-                        style={{ background: "var(--blue)" }}
+                        style={{ background: "var(--sky)" }}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-3">
@@ -492,17 +492,17 @@ export function CampusLifeScreen({ onBack }: CampusLifeScreenProps) {
             </section>
 
             <section className="tt-card space-y-3 p-5">
-              <h3 className={sectionTitle}>New event</h3>
+              <h3 className={sectionTitle}>Nouvel événement</h3>
               <input
                 value={eventTitle}
                 onChange={(event) => setEventTitle(event.target.value)}
-                placeholder="After-work C++ — pizza and past exams"
+                placeholder="After-work C++ — pizza et anciens examens"
                 className={inputClass}
               />
               <input
                 value={eventLocation}
                 onChange={(event) => setEventLocation(event.target.value)}
-                placeholder="Place — Bloc C, room 302"
+                placeholder="Lieu — Bloc C, salle 302"
                 className={inputClass}
               />
               <div className="flex gap-2">

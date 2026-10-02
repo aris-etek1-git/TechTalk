@@ -50,14 +50,13 @@ export function ContentScreen() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { savedIds, toggleSave, markRead, user } = useAppStore();
+  const { savedIds, toggleSave, likedIds, toggleLike, markRead, user } = useAppStore();
 
   const [item, setItem] = useState<ContentItem | null>(
     (location.state as { item?: ContentItem } | null)?.item ?? null
   );
   const [pool, setPool] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(!item);
-  const [liked, setLiked] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [suggestFilter, setSuggestFilter] = useState<string>("Tout");
   const [comments, setComments] = useState<LocalComment[]>([]);
@@ -141,6 +140,7 @@ export function ContentScreen() {
   }
 
   const isSaved = savedIds.has(item.id);
+  const isLiked = likedIds.has(item.id);
 
   const share = async () => {
     const link = `${window.location.origin}/content/${item!.id}`;
@@ -216,16 +216,17 @@ export function ContentScreen() {
             </div>
             <button
               onClick={() => toast.info("Les abonnements aux créateurs arrivent bientôt !")}
-              className="tt-btn tt-btn-blue px-5 py-2 text-sm flex-shrink-0 gap-1.5"
+              className="tt-btn tt-btn-secondary px-5 py-2 text-sm flex-shrink-0 gap-1.5"
             >
               <Plus size={14} /> S'abonner
             </button>
             <div className="flex items-center gap-1 sm:border-l sm:border-border/60 sm:pl-3">
               <button
-                onClick={() => setLiked((v) => !v)}
-                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${liked ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-surface-2"}`}
+                onClick={() => toggleLike(item)}
+                aria-pressed={isLiked}
+                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isLiked ? "text-orange bg-orange/10" : "text-muted-foreground hover:bg-surface-2"}`}
               >
-                <Heart size={15} className={liked ? "fill-primary" : ""} /> {formatCount(item.likes + (liked ? 1 : 0))}
+                <Heart size={15} className={isLiked ? "fill-orange" : ""} /> {formatCount(item.likes + (isLiked ? 1 : 0))}
               </button>
               <span className="tt-btn gap-1.5 px-3 py-2 text-[12px] text-muted-foreground">
                 <MessageCircle size={15} /> {formatCount(item.comments + comments.length)}
@@ -235,7 +236,7 @@ export function ContentScreen() {
               </button>
               <button
                 onClick={() => toggleSave(item)}
-                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isSaved ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-surface-2"}`}
+                className={`tt-btn gap-1.5 px-3 py-2 text-[12px] ${isSaved ? "text-orange bg-orange/10" : "text-muted-foreground hover:bg-surface-2"}`}
               >
                 {isSaved ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
                 <span className="hidden md:inline">{isSaved ? "Enregistré" : "Enregistrer"}</span>
@@ -257,7 +258,7 @@ export function ContentScreen() {
             </button>
             <div className="flex flex-wrap gap-1.5 mt-3">
               {(item.categories && item.categories.length > 0 ? item.categories : [item.category]).map((tag) => (
-                <span key={tag} className="text-[11px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                <span key={tag} className="tt-chip text-[11px]">
                   #{tag.toLowerCase().replace(/\s+/g, "")}
                 </span>
               ))}

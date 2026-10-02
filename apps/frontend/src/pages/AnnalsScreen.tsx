@@ -411,7 +411,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         onClick={() => handleDownload(doc)}
                         disabled={busyId === doc.id}
                         className="tt-btn p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground md:opacity-50 md:group-hover:opacity-100"
-                        aria-label="Download"
+                        aria-label="Télécharger"
                       >
                         <Download size={14} />
                       </button>
@@ -420,7 +420,7 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                           onClick={() => handleStatus(doc, "approved")}
                           disabled={busyId === doc.id}
                           className="tt-btn p-2 text-emerald-600 transition-colors hover:bg-emerald-500/10 dark:text-emerald-400"
-                          aria-label="Approve"
+                          aria-label="Approuver"
                         >
                           <Check size={14} />
                         </button>
@@ -429,8 +429,8 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         <button
                           onClick={() => handleStatus(doc, "rejected")}
                           disabled={busyId === doc.id}
-                          className="tt-btn p-2 text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
-                          aria-label="Reject"
+                          className="tt-btn p-2 text-destructive transition-colors hover:bg-destructive/10"
+                          aria-label="Rejeter"
                         >
                           <X size={14} />
                         </button>
@@ -439,8 +439,8 @@ export function AnnalsScreen({ onBack }: AnnalsScreenProps) {
                         <button
                           onClick={() => handleDelete(doc)}
                           disabled={busyId === doc.id}
-                          className="tt-btn p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-red-600 dark:hover:text-red-400"
-                          aria-label="Delete"
+                          className="tt-btn p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-destructive"
+                          aria-label="Supprimer"
                         >
                           <Trash2 size={14} />
                         </button>

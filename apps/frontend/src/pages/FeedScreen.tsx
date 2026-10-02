@@ -42,7 +42,7 @@ function SkeletonCard() {
 
 export function FeedScreen() {
   const navigate = useNavigate();
-  const { savedIds, toggleSave, interests, markRead } = useAppStore();
+  const { savedIds, toggleSave, likedIds, toggleLike, interests, markRead } = useAppStore();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tab = searchParams.get("tab") === "abonnements" ? "abonnements" : "pour-toi";
@@ -163,8 +163,10 @@ export function FeedScreen() {
           <ShortsFeed
             items={items}
             savedIds={savedIds}
+            likedIds={likedIds}
             onLoadMore={loadMore}
             onSave={toggleSave}
+            onLike={toggleLike}
             onShare={shareItem}
             onOpen={openItem}
           />
@@ -202,8 +204,10 @@ export function FeedScreen() {
                 key={item.id}
                 item={item}
                 isSaved={savedIds.has(item.id)}
+                isLiked={likedIds.has(item.id)}
                 onOpen={() => openItem(item)}
                 onSave={() => toggleSave(item)}
+                onLike={() => toggleLike(item)}
                 onShare={() => shareItem(item)}
               />
             ))}
@@ -287,7 +291,7 @@ function FeedBar({
                 {active && (
                   <span
                     className="absolute bottom-[-13px] left-0 right-0 h-[3px] rounded-full"
-                    style={{ background: "var(--red)" }}
+                    style={{ background: "var(--violet)" }}
                   />
                 )}
               </button>
@@ -327,7 +331,7 @@ function FeedBar({
               key={id}
               onClick={() => onLength(id)}
               className={`tt-chip transition-colors ${
-                length === id ? "tt-chip-active text-primary font-semibold" : "text-muted-foreground"
+                length === id ? "tt-chip-active font-semibold" : "text-muted-foreground"
               }`}
             >
               {label}

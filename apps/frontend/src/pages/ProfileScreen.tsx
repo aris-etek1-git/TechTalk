@@ -166,7 +166,7 @@ export function ProfileScreen() {
                   { label: "Jours actifs", value: readDates.length },
                 ].map((s) => (
                   <div key={s.label} className="tt-card p-4 text-center">
-                    <p className="text-xl font-extrabold tt-accent-blue">{s.value}</p>
+                    <p className="text-xl font-extrabold tt-accent-violet">{s.value}</p>
                     <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-1">{s.label}</p>
                   </div>
                 ))}

@@ -7,18 +7,19 @@ import { SourceBadge } from "./SourceBadge";
 interface ShortsFeedProps {
   items: ContentItem[];
   savedIds: Set<string>;
+  likedIds: Set<string>;
   onLoadMore: () => void;
   onSave: (item: ContentItem) => void;
+  onLike: (item: ContentItem) => void;
   onShare: (item: ContentItem) => void;
   onOpen: (item: ContentItem) => void;
 }
 
 /* Vertical, snap-scrolling, one-item-per-screen stream. Only the active tile
    mounts a player, so scrolling stays cheap on mobile. */
-export function ShortsFeed({ items, savedIds, onLoadMore, onShare, onSave, onOpen }: ShortsFeedProps) {
+export function ShortsFeed({ items, savedIds, likedIds, onLoadMore, onShare, onSave, onLike, onOpen }: ShortsFeedProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
   const indexRef = useRef(0);
   indexRef.current = active;
@@ -58,14 +59,6 @@ export function ShortsFeed({ items, savedIds, onLoadMore, onShare, onSave, onOpe
   useEffect(() => {
     if (active >= items.length - 3) onLoadMore();
   }, [active, items.length, onLoadMore]);
-
-  const toggleLike = (id: string) =>
-    setLikedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
 
   return (
     <div
@@ -110,17 +103,15 @@ export function ShortsFeed({ items, savedIds, onLoadMore, onShare, onSave, onOpe
                 </button>
               )}
 
-              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 tt-scrim" />
-
               {/* Action rail */}
               <div className="absolute bottom-28 right-3 flex flex-col items-center gap-4">
                 <RailButton
                   label={formatCount(item.likes + (isLiked ? 1 : 0))}
                   active={isLiked}
-                  activeClass="text-primary"
-                  onClick={() => toggleLike(item.id)}
+                  activeClass="text-orange"
+                  onClick={() => onLike(item)}
                 >
-                  <Heart size={20} className={isLiked ? "fill-primary" : ""} />
+                  <Heart size={20} className={isLiked ? "fill-orange" : ""} />
                 </RailButton>
                 <RailButton label={formatCount(item.comments)} onClick={() => onOpen(item)}>
                   <MessageCircle size={20} />
@@ -128,10 +119,10 @@ export function ShortsFeed({ items, savedIds, onLoadMore, onShare, onSave, onOpe
                 <RailButton
                   label={isSaved ? "Sauvé" : "Sauver"}
                   active={isSaved}
-                  activeClass="text-accent"
+                  activeClass="text-orange"
                   onClick={() => onSave(item)}
                 >
-                  <Bookmark size={20} className={isSaved ? "fill-accent" : ""} />
+                  <Bookmark size={20} className={isSaved ? "fill-orange" : ""} />
                 </RailButton>
                 <RailButton label="Partager" onClick={() => onShare(item)}>
                   <Share2 size={20} />
@@ -148,7 +139,7 @@ export function ShortsFeed({ items, savedIds, onLoadMore, onShare, onSave, onOpe
               </div>
 
               {/* Meta */}
-              <div className="absolute inset-x-0 bottom-0 p-4 pr-16 text-white">
+              <div className="tt-scrim absolute inset-x-0 bottom-0 border-t border-white/12 p-4 pr-16 text-white">
                 <div className="mb-2 flex items-center gap-2 text-[11px] opacity-90">
                   <SourceBadge source={item.source} />
                   <span className="font-mono">{item.duration ?? item.category}</span>

@@ -161,7 +161,7 @@ export function ExploreScreen() {
               <button key={t.id} onClick={() => setTab(t.id)} className="tt-btn relative px-1 pb-2.5 text-sm">
                 <span className={active ? "text-foreground font-bold" : "text-muted-foreground font-medium"}>{t.label}</span>
                 {active && (
-                  <span className="absolute bottom-[-1px] left-0 right-0 h-[3px] rounded-full" style={{ background: "var(--blue)" }} />
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-[3px] rounded-full" style={{ background: "var(--violet)" }} />
                 )}
               </button>
             );
@@ -185,7 +185,10 @@ export function ExploreScreen() {
           <section className="mb-6 tt-card border-accent/30 p-5">
             <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="tt-label text-accent">Recherche augmentée</p>
+                <p className="tt-label flex items-center gap-2 text-accent">
+                  <span className="tt-claw tt-claw-sm tt-claw-orange" aria-hidden />
+                  Recherche augmentée
+                </p>
                 <h2 className="mt-2 text-xl font-extrabold">Construire un chemin autour de « {q} »</h2>
               </div>
               <span className="text-xs text-muted-foreground">4 types de ressources</span>
@@ -194,7 +197,7 @@ export function ExploreScreen() {
               {GRAPH_SEARCH.map(({ kind, title, detail, meta, icon: Icon, href }) => (
                 <a key={title} href={href} target="_blank" rel="noreferrer" className="group border border-border p-4 transition-colors hover:border-accent">
                   <div className="flex items-start gap-3">
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center ${kind === "LeetCode" || kind === "Vidéo" ? "bg-primary text-white" : "bg-accent text-black"}`}><Icon size={16} /></span>
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center ${kind === "LeetCode" || kind === "Vidéo" ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground"}`}><Icon size={16} /></span>
                     <div className="min-w-0"><div className="flex items-center gap-2"><span className="tt-label">{kind}</span><ArrowUpRight size={12} className="text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></div><h3 className="mt-1 text-sm font-extrabold">{title}</h3><p className="mt-1 text-xs leading-relaxed text-muted-foreground">{detail}</p><p className="mt-3 text-[10px] font-semibold text-accent">{meta}</p></div>
                   </div>
                 </a>

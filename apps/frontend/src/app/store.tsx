@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { toast } from "sonner";
 import { api, User as ApiUser } from "../services/api";
 import { ContentItem } from "../types/content";
 import { mapBackendContentToItem, loadInterests, saveInterests } from "../lib/content";
@@ -12,6 +13,9 @@ interface AppStore {
   savedIds: Set<string>;
   savedError: string | null;
   toggleSave: (item: ContentItem) => Promise<void>;
+
+  likedIds: Set<string>;
+  toggleLike: (item: ContentItem) => Promise<void>;
 
   readIds: Set<string>;
   readDates: string[];
@@ -42,6 +46,7 @@ export function AppStoreProvider({
 }) {
   const [saved, setSaved] = useState<ContentItem[]>([]);
   const [savedError, setSavedError] = useState<string | null>(null);
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [interests, setInterests] = useState<string[]>(loadInterests);
 
   const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -77,6 +82,21 @@ export function AppStoreProvider({
       .catch((err) => {
         console.error("Failed to fetch bookmarks:", err);
         setSavedError("Impossible de charger vos favoris");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .getLikes()
+      .then((ids) => {
+        if (!cancelled) setLikedIds(new Set(ids));
+      })
+      .catch((err) => {
+        console.error("Failed to fetch likes:", err);
       });
     return () => {
       cancelled = true;
@@ -121,6 +141,27 @@ export function AppStoreProvider({
     }
   };
 
+  const toggleLike = async (item: ContentItem) => {
+    const isLiked = likedIds.has(item.id);
+    // Optimistic: the heart answers immediately, the server confirms after.
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      if (isLiked) next.delete(item.id);
+      else next.add(item.id);
+      return next;
+    });
+    const res = isLiked ? await api.deleteLike(item.id) : await api.addLike(item.id);
+    if (!res.success) {
+      setLikedIds((prev) => {
+        const next = new Set(prev);
+        if (isLiked) next.add(item.id);
+        else next.delete(item.id);
+        return next;
+      });
+      toast.error(res.error ?? "Le like n’a pas été enregistré.");
+    }
+  };
+
   const markRead = (item: ContentItem) => {
     setReadIds((prev) => {
       const next = new Set(prev);
@@ -158,6 +199,8 @@ export function AppStoreProvider({
         savedIds: new Set(saved.map((i) => i.id)),
         savedError,
         toggleSave,
+        likedIds,
+        toggleLike,
         readIds,
         readDates,
         markRead,

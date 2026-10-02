@@ -37,6 +37,17 @@ export const bookmarks = pgTable('bookmarks', {
   userContentUniqueIdx: uniqueIndex('bookmarks_user_content_unique_idx').on(table.userId, table.contentId),
 }));
 
+// A bookmark means "read it later"; a like is the user affirming the content
+// itself. Both are per-user, idempotent, and survive a session change.
+export const likes = pgTable('likes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  contentId: uuid('content_id').references(() => contents.id, { onDelete: 'cascade' }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  userContentUniqueIdx: uniqueIndex('likes_user_content_unique_idx').on(table.userId, table.contentId),
+}));
+
 export const readingHistory = pgTable('reading_history', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),

@@ -41,7 +41,7 @@ export function OnboardingScreen() {
                 key={tag}
                 onClick={() => toggle(tag)}
                 className={`tt-chip text-sm! px-4! py-2! transition-all ${
-                  active ? "tt-btn-brand text-white! border-transparent" : "text-muted-foreground hover:text-foreground"
+                  active ? "tt-btn-brand border-transparent" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tag}

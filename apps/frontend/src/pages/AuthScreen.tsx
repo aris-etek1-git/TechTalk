@@ -72,7 +72,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
           shape: "rectangular",
           width,
           text: "continue_with",
-          locale: "en",
+          locale: "fr",
         });
       };
 
@@ -85,7 +85,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
       setupGis();
     } else {
       const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client?hl=en";
+      script.src = "https://accounts.google.com/gsi/client?hl=fr";
       script.async = true;
       script.defer = true;
       script.onload = setupGis;
@@ -105,10 +105,10 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
       if (res.success && res.user) {
         onAuthSuccess(res.user);
       } else {
-        setError(res.error || "Google Sign-In failed");
+        setError(res.error || "La connexion Google a échoué.");
       }
     } catch {
-      setError("An unexpected error occurred. Please try again.");
+      setError("Une erreur inattendue est survenue. Réessayez.");
     } finally {
       setGoogleLoading(false);
     }
@@ -117,7 +117,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   const handleGoogleClick = () => {
     if (!GOOGLE_CLIENT_ID || !window.google?.accounts?.id) {
       toast.info(
-        "Google Sign-In is coming soon! Please use standard email Sign In / Sign Up for now."
+        "La connexion Google arrive bientôt. Utilisez l’e-mail pour l’instant."
       );
       return;
     }
@@ -135,7 +135,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
   const handleSubmit = async () => {
     if (!email || !password || (mode === "signup" && !name)) {
-      setError("Please fill out all fields.");
+      setError("Merci de remplir tous les champs.");
       return;
     }
     setError(null);
@@ -146,7 +146,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         if (res.success && res.user) {
           onAuthSuccess(res.user);
         } else {
-          setError(res.error || "Login failed");
+          setError(res.error || "Connexion impossible.");
         }
       } else {
         const res = await api.register(name, email, password);
@@ -155,15 +155,15 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
           if (loginRes.success && loginRes.user) {
             onAuthSuccess(loginRes.user);
           } else {
-            setError("Account created! Please sign in manually.");
+            setError("Compte créé ! Connectez-vous.");
             setMode("login");
           }
         } else {
-          setError(res.error || "Registration failed");
+          setError(res.error || "L’inscription a échoué.");
         }
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setError("Une erreur inattendue est survenue. Réessayez.");
     } finally {
       setLoading(false);
     }
@@ -203,7 +203,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {m === "login" ? "Sign In" : "Sign Up"}
+                {m === "login" ? "Se connecter" : "S’inscrire"}
               </button>
             ))}
           </div>
@@ -216,22 +216,22 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
           <div className="space-y-5">
             {mode === "signup" && (
-              <Field label="Name" type="text" placeholder="Alex Kim" value={name} onChange={setName} />
+              <Field label="Nom" type="text" placeholder="Alex Kim" value={name} onChange={setName} />
             )}
-            <Field label="Email" type="email" placeholder="you@example.com" value={email} onChange={setEmail} />
-            <Field label="Password" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
+            <Field label="Adresse e-mail" type="email" placeholder="vous@exemple.com" value={email} onChange={setEmail} />
+            <Field label="Mot de passe" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
 
             <button
               onClick={handleSubmit}
               disabled={loading}
               className="tt-btn tt-btn-brand mt-2 w-full px-5 py-3 text-sm"
             >
-              {loading ? "Please wait..." : mode === "login" ? "Sign In →" : "Create Account →"}
+              {loading ? "Patientez…" : mode === "login" ? "Se connecter →" : "Créer un compte →"}
             </button>
 
             <div className="flex items-center gap-3 my-1">
               <div className="tt-divider-brand flex-1" />
-              <span className="text-xs text-muted-foreground">or</span>
+              <span className="text-xs text-muted-foreground">ou</span>
               <div className="tt-divider-brand flex-1" />
             </div>
 
@@ -244,7 +244,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                 className="tt-btn tt-btn-ghost w-full px-4 py-3 text-sm"
               >
                 <GoogleIcon />
-                {googleLoading ? "Signing in..." : "Continue with Google"}
+                {googleLoading ? "Connexion…" : "Continuer avec Google"}
               </button>
             )}
 

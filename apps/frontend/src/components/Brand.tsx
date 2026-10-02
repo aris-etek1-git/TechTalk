@@ -1,4 +1,4 @@
-import { Rss } from "lucide-react";
+import { Wifi } from "lucide-react";
 
 export function BrandMark({
   size = 32,
@@ -14,7 +14,7 @@ export function BrandMark({
       className="tt-logo-mark flex-shrink-0"
       style={{ width: size, height: size, borderRadius: radius }}
     >
-      <Rss size={glyph} />
+      <Wifi size={glyph} />
     </span>
   );
 }

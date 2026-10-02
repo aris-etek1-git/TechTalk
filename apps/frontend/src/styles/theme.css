@@ -3,10 +3,13 @@
 /* ------------------------------------------------------------------
    TechTalk design system
 
-   Palette: blue carries the interface, red is the rare wild accent,
-   and all depth comes from white/black played on opacity. No colored
-   gradients — every fill is flat. Motif: the claw (three tapered
-   scratches) on the logo, section separators and hover reveals.
+   Palette: dark orange is the dominant voice and light blue the dominant
+   bed — together they carry the interface. Violet is only a touch: the
+   current selection, the watermark, one highlight per view. Black stays
+   the ink and the depth. No gradients anywhere: every fill is one flat
+   color, and depth comes from hairlines, inset edge lines, blur and
+   shadows instead of sheens. Motif: the claw, kept sparse (shell watermark, card hover
+   reveal, search label, landing scratch). The logo is the wifi glyph alone.
 
    Light is the default on :root, dark overrides on .dark. The .dark
    class lives on <html>, set by useTheme + the pre-paint script in
@@ -17,87 +20,80 @@
   color-scheme: light;
 
   --font-size: 16px;
-  --radius: 1.25rem;
-  --radius-tile: 1.75rem;
+  --radius: 1rem;
+  --radius-tile: 1.3rem;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
 
   /* Ink & paper */
-  --background: #eef3fb;
-  --foreground: #091225;
+  --background: #f3f6fb;
+  --foreground: #0a0812;
   --card: rgba(255, 255, 255, 0.66);
-  --card-foreground: #0a1224;
-  --popover: rgba(251, 253, 255, 0.92);
-  --popover-foreground: #0a1224;
+  --card-foreground: #0b0913;
+  --popover: rgba(252, 251, 255, 0.92);
+  --popover-foreground: #0b0913;
 
-  --primary: #f97316;
+  --primary: #c2410c;
   --primary-foreground: #ffffff;
-  --secondary: #dfe9fa;
-  --secondary-foreground: #101d38;
-  --muted: #e6edf9;
-  --muted-foreground: #52688f;
-  --accent: #2563eb;
+  --secondary: #e3edf8;
+  --secondary-foreground: #0b1520;
+  --muted: #e8eff7;
+  --muted-foreground: #4e5f72;
+  --accent: #0369a1;
   --accent-foreground: #ffffff;
-  --destructive: #f97316;
+  --destructive: #6d28d9;
   --destructive-foreground: #ffffff;
 
-  --border: rgba(10, 18, 36, 0.1);
+  --border: rgba(10, 8, 18, 0.1);
   --input: rgba(255, 255, 255, 0.7);
   --input-background: rgba(255, 255, 255, 0.7);
-  --switch-background: #c3d1ea;
-  --ring: rgba(37, 99, 235, 0.45);
+  --switch-background: #c7d8e9;
+  --ring: rgba(194, 65, 12, 0.45);
 
   /* Surfaces & glass: sheen on top, shade at the bottom, opacity only */
   --surface: rgba(255, 255, 255, 0.66);
-  --surface-2: #e2ebf9;
-  --surface-3: #d4e1f5;
+  --surface-2: #e4eef8;
+  --surface-3: #d3e3f3;
   --glass: rgba(255, 255, 255, 0.5);
   --glass-strong: rgba(255, 255, 255, 0.74);
   --glass-border: rgba(255, 255, 255, 0.9);
-  --hairline: rgba(10, 18, 36, 0.09);
-  --sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.28) 42%, rgba(0, 0, 0, 0.05) 100%);
-  --sheen-flat: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.12) 48%, rgba(0, 0, 0, 0.14) 100%);
-  --chip-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.38) 100%);
+  --hairline: rgba(10, 8, 18, 0.09);
+  --veil: rgba(255, 255, 255, 0.66);
   --ice-inset: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(0, 0, 0, 0.06);
-  --claw-ink: rgba(10, 18, 36, 0.12);
+  --claw-ink: rgba(10, 8, 18, 0.12);
 
-  /* Brand colors: flat, never blended */
-  --blue: #1e40af;
-  --blue-bright: #2563eb;
-  --blue-soft: rgba(37, 99, 235, 0.11);
-  --red: #f97316;
-  --red-soft: rgba(249, 115, 22, 0.14);
-  --brand: #2563eb;
-  --brand-blue: #2563eb;
-  --brand-cyan: #3b82f6;
-  --brand-gradient-soft: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(37, 99, 235, 0.1));
-  --brand-blue-soft: rgba(37, 99, 235, 0.12);
-  --brand-orange-soft: rgba(249, 115, 22, 0.14);
-  --scrim: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.38) 58%, rgba(0, 0, 0, 0.82) 100%);
-  --mesh:
-    radial-gradient(58rem 34rem at 50% -20%, rgba(37, 99, 235, 0.14), transparent 60%),
-    radial-gradient(46rem 30rem at 106% 108%, rgba(249, 115, 22, 0.08), transparent 60%);
+  /* Brand colors: flat, never blended. */
+  --violet: #6d28d9;
+  --violet-bright: #7c3aed;
+  --violet-soft: rgba(109, 40, 217, 0.1);
+  --sky: #0369a1;
+  --sky-soft: rgba(3, 105, 161, 0.11);
+  --orange: #c2410c;
+  --orange-soft: rgba(194, 65, 12, 0.1);
+  --orange-foreground: #ffffff;
+  --scrim: rgba(0, 0, 0, 0.52);
 
   /* Elevation */
-  --shadow-card: 0 1px 2px rgba(10, 18, 36, 0.05), 0 18px 40px -26px rgba(10, 25, 60, 0.32);
-  --shadow-raised: 0 2px 6px rgba(10, 18, 36, 0.07), 0 34px 60px -30px rgba(10, 25, 60, 0.4);
-  --glow-primary: 0 12px 30px -14px rgba(249, 115, 22, 0.45);
-  --glow-cyan: 0 10px 30px -14px rgba(37, 99, 235, 0.45);
+  --shadow-card: 0 1px 2px rgba(10, 8, 18, 0.05), 0 18px 40px -26px rgba(12, 20, 32, 0.3);
+  --shadow-raised: 0 2px 6px rgba(10, 8, 18, 0.07), 0 34px 60px -30px rgba(12, 20, 32, 0.38);
+  --glow-primary: 0 12px 30px -14px rgba(194, 65, 12, 0.4);
+  --glow-sky: 0 10px 30px -14px rgba(3, 105, 161, 0.35);
+  --glow-violet: 0 10px 30px -14px rgba(109, 40, 217, 0.42);
 
-  --chart-1: #2563eb;
-  --chart-2: #60a5fa;
-  --chart-3: #0a1224;
-  --chart-4: #f97316;
-  --chart-5: #38bdf8;
+  --chart-1: #c2410c;
+  --chart-2: #38bdf8;
+  --chart-3: #0a0812;
+  --chart-4: #6d28d9;
+  --chart-5: #7c3aed;
 
   --sidebar: rgba(255, 255, 255, 0.5);
-  --sidebar-foreground: #0a1224;
-  --sidebar-primary: #2563eb;
+  --sidebar-foreground: #0b0913;
+  --sidebar-primary: #c2410c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #dfe8f6;
-  --sidebar-accent-foreground: #0a1224;
-  --sidebar-border: rgba(10, 18, 36, 0.08);
-  --sidebar-ring: rgba(37, 99, 235, 0.42);
+  --sidebar-accent: #e1ecf8;
+  --sidebar-accent-foreground: #0b0913;
+  --sidebar-border: rgba(10, 8, 18, 0.08);
+  --sidebar-ring: rgba(194, 65, 12, 0.4);
 
   /* Three tapered scratches, used as a mask so the paint stays flat. */
   --claw-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M7 3c2 17 6 34 14 51-4 0-7-2-9-6C6 32 3 17 2 4z'/%3E%3Cpath d='M25 1c2 18 7 35 16 53-4 0-8-2-10-7C24 32 20 17 19 2z'/%3E%3Cpath d='M43 6c2 16 6 31 14 46-4 0-7-2-9-7-6-14-9-28-10-40z'/%3E%3C/svg%3E");
@@ -106,78 +102,71 @@
 .dark {
   color-scheme: dark;
 
-  --background: #05080f;
-  --foreground: #e6edfb;
-  --card: rgba(13, 20, 36, 0.6);
-  --card-foreground: #e6edfb;
-  --popover: rgba(11, 17, 32, 0.9);
-  --popover-foreground: #e6edfb;
+  --background: #05040a;
+  --foreground: #e9eff7;
+  --card: rgba(15, 20, 28, 0.6);
+  --card-foreground: #e9eff7;
+  --popover: rgba(12, 17, 25, 0.9);
+  --popover-foreground: #e9eff7;
 
-  --primary: #fb923c;
-  --primary-foreground: #1a0006;
-  --secondary: #121a2e;
-  --secondary-foreground: #e6edfb;
-  --muted: #0f1626;
-  --muted-foreground: #8496b8;
-  --accent: #60a5fa;
-  --accent-foreground: #04102a;
-  --destructive: #fb923c;
-  --destructive-foreground: #1a0006;
+  --primary: #f97316;
+  --primary-foreground: #170800;
+  --secondary: #121826;
+  --secondary-foreground: #e9eff7;
+  --muted: #121a24;
+  --muted-foreground: #9fb0c4;
+  --accent: #7dd3fc;
+  --accent-foreground: #06131d;
+  --destructive: #a78bfa;
+  --destructive-foreground: #150a2b;
 
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.05);
   --input-background: rgba(255, 255, 255, 0.05);
-  --switch-background: #1d2942;
-  --ring: rgba(96, 165, 250, 0.55);
+  --switch-background: #223047;
+  --ring: rgba(249, 115, 22, 0.55);
 
-  --surface: rgba(14, 21, 38, 0.6);
-  --surface-2: #101828;
-  --surface-3: #182338;
-  --glass: rgba(12, 19, 35, 0.55);
-  --glass-strong: rgba(9, 14, 27, 0.76);
+  --surface: rgba(16, 22, 31, 0.6);
+  --surface-2: #0f1723;
+  --surface-3: #17283a;
+  --glass: rgba(11, 17, 26, 0.55);
+  --glass-strong: rgba(8, 13, 20, 0.76);
   --glass-border: rgba(255, 255, 255, 0.14);
   --hairline: rgba(255, 255, 255, 0.1);
-  --sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(0, 0, 0, 0.35) 100%);
-  --sheen-flat: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.05) 48%, rgba(0, 0, 0, 0.32) 100%);
-  --chip-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --veil: rgba(255, 255, 255, 0.055);
   --ice-inset: inset 0 1px 0 rgba(255, 255, 255, 0.13), inset 0 -1px 0 rgba(0, 0, 0, 0.4);
   --claw-ink: rgba(255, 255, 255, 0.12);
 
-  --blue: #60a5fa;
-  --blue-bright: #3b82f6;
-  --blue-soft: rgba(96, 165, 250, 0.14);
-  --red: #fb923c;
-  --red-soft: rgba(251, 146, 60, 0.15);
-  --brand: #60a5fa;
-  --brand-blue: #60a5fa;
-  --brand-cyan: #3b82f6;
-  --brand-gradient-soft: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(96, 165, 250, 0.14));
-  --brand-blue-soft: rgba(96, 165, 250, 0.14);
-  --brand-orange-soft: rgba(251, 146, 60, 0.15);
-  --scrim: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.92) 100%);
-  --mesh:
-    radial-gradient(58rem 32rem at 50% -22%, rgba(29, 78, 216, 0.3), transparent 62%),
-    radial-gradient(44rem 28rem at 104% 110%, rgba(251, 146, 60, 0.12), transparent 62%);
+  --violet: #a78bfa;
+  --violet-bright: #8b5cf6;
+  --violet-soft: rgba(167, 139, 250, 0.15);
+  --sky: #7dd3fc;
+  --sky-soft: rgba(125, 211, 252, 0.13);
+  --orange: #f97316;
+  --orange-soft: rgba(249, 115, 22, 0.15);
+  --orange-foreground: #170800;
+  --scrim: rgba(0, 0, 0, 0.62);
 
   --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 22px 44px -28px rgba(0, 0, 0, 0.95);
   --shadow-raised: 0 0 0 1px rgba(255, 255, 255, 0.09) inset, 0 36px 64px -30px rgba(0, 0, 0, 1);
-  --glow-primary: 0 12px 34px -14px rgba(251, 146, 60, 0.52);
-  --glow-cyan: 0 12px 34px -14px rgba(59, 130, 246, 0.5);
+  --glow-primary: 0 12px 34px -14px rgba(249, 115, 22, 0.5);
+  --glow-sky: 0 12px 34px -14px rgba(125, 211, 252, 0.4);
+  --glow-violet: 0 12px 34px -14px rgba(139, 92, 246, 0.5);
 
-  --chart-1: #60a5fa;
+  --chart-1: #f97316;
   --chart-2: #38bdf8;
-  --chart-3: #a78bfa;
-  --chart-4: #fb923c;
-  --chart-5: #fbbf24;
+  --chart-3: #c4b5fd;
+  --chart-4: #a78bfa;
+  --chart-5: #7dd3fc;
 
-  --sidebar: rgba(9, 14, 27, 0.62);
-  --sidebar-foreground: #e6edfb;
-  --sidebar-primary: #60a5fa;
-  --sidebar-primary-foreground: #04102a;
-  --sidebar-accent: #101828;
-  --sidebar-accent-foreground: #e6edfb;
+  --sidebar: rgba(8, 12, 19, 0.62);
+  --sidebar-foreground: #e9eff7;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #170800;
+  --sidebar-accent: #121826;
+  --sidebar-accent-foreground: #e9eff7;
   --sidebar-border: rgba(255, 255, 255, 0.09);
-  --sidebar-ring: rgba(96, 165, 250, 0.45);
+  --sidebar-ring: rgba(249, 115, 22, 0.45);
 }
 
 @theme inline {
@@ -215,11 +204,10 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
-  --color-brand: var(--brand);
-  --color-blue: var(--blue);
-  --color-red: var(--red);
-  --color-brand-blue: var(--brand-blue);
-  --color-brand-cyan: var(--brand-cyan);
+  --color-brand: var(--violet);
+  --color-violet: var(--violet);
+  --color-sky: var(--sky);
+  --color-orange: var(--orange);
   --color-glass: var(--glass);
   --color-glass-border: var(--glass-border);
   --color-hairline: var(--hairline);
@@ -228,7 +216,7 @@
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --shadow-card: var(--shadow-card);
   --shadow-raised: var(--shadow-raised);
-  --shadow-glow: var(--glow-cyan);
+  --shadow-glow: var(--glow-sky);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -255,7 +243,7 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--blue) 26%, transparent);
+    background: color-mix(in oklab, var(--orange) 26%, transparent);
     color: var(--foreground);
   }
 
@@ -299,8 +287,7 @@
 
 @layer components {
   .tt-shell {
-    background: var(--mesh), var(--background);
-    background-attachment: fixed;
+    background: var(--background);
   }
 
   /* ---- Glass ---------------------------------------------------- */
@@ -323,27 +310,6 @@
     border: 1px solid var(--glass-border);
     box-shadow: var(--ice-inset), 0 24px 54px -34px rgba(4, 12, 30, 0.6);
     border-radius: var(--radius);
-  }
-
-  .tt-ice {
-    position: relative;
-    isolation: isolate;
-    background: var(--glass-strong);
-    -webkit-backdrop-filter: blur(36px) saturate(200%);
-    backdrop-filter: blur(36px) saturate(200%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-tile);
-    box-shadow: var(--ice-inset), var(--shadow-raised);
-    overflow: hidden;
-  }
-
-  .tt-ice::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--sheen);
-    pointer-events: none;
   }
 
   .tt-surface {
@@ -371,8 +337,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: var(--sheen);
-    opacity: 0.5;
+    background: var(--veil);
     pointer-events: none;
   }
 
@@ -382,7 +347,7 @@
 
   .tt-card-hover:hover {
     transform: translateY(-3px);
-    border-color: color-mix(in oklab, var(--blue) 40%, var(--glass-border));
+    border-color: color-mix(in oklab, var(--orange) 40%, var(--glass-border));
     box-shadow: var(--ice-inset), var(--shadow-raised);
   }
 
@@ -405,11 +370,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), color-mix(in oklab, var(--blue) 60%, transparent));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--orange) 55%, transparent);
     pointer-events: none;
     opacity: 0.85;
     transition: opacity 0.28s ease;
@@ -426,18 +387,11 @@
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.04em;
-    background: linear-gradient(125deg, var(--blue) 0%, var(--blue-bright) 78%, color-mix(in oklab, var(--red) 28%, var(--blue)) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--orange);
   }
 
-  .tt-accent-blue {
-    color: var(--blue);
-  }
-
-  .tt-accent-red {
-    color: var(--red);
+  .tt-accent-violet {
+    color: var(--violet);
   }
 
   /* Scholarly micro-label: mono, uppercase, wide tracking. */
@@ -465,9 +419,7 @@
   }
 
   .tt-claw-sm { --claw-size: 13px; }
-  .tt-claw-lg { --claw-size: 34px; }
-  .tt-claw-blue { color: var(--blue); }
-  .tt-claw-red { color: var(--red); }
+  .tt-claw-orange { color: var(--orange); }
   .tt-claw-ghost { color: var(--claw-ink); }
 
   .tt-claw-corner {
@@ -482,7 +434,7 @@
   .tt-scratch {
     position: relative;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--hairline) 20%, var(--hairline) 80%, transparent);
+    background: var(--hairline);
   }
 
   .tt-scratch::after {
@@ -493,7 +445,7 @@
     translate: -50% 0;
     width: 24px;
     height: 19px;
-    background: color-mix(in oklab, var(--red) 60%, transparent);
+    background: color-mix(in oklab, var(--orange) 60%, transparent);
     -webkit-mask: var(--claw-mask) no-repeat center / contain;
     mask: var(--claw-mask) no-repeat center / contain;
     transform: rotate(-8deg);
@@ -507,7 +459,7 @@
     gap: 0.375rem;
     border-radius: 999px;
     border: 1px solid var(--glass-border);
-    background: var(--chip-glass), var(--blue-soft);
+    background: color-mix(in oklab, var(--sky) 10%, var(--surface));
     box-shadow: var(--ice-inset);
     -webkit-backdrop-filter: blur(14px) saturate(160%);
     backdrop-filter: blur(14px) saturate(160%);
@@ -520,20 +472,16 @@
   }
 
   .tt-chip:hover {
-    border-color: color-mix(in oklab, var(--blue) 45%, var(--glass-border));
-    color: var(--blue);
+    border-color: color-mix(in oklab, var(--sky) 45%, var(--glass-border));
+    color: var(--sky);
   }
 
-  .tt-chip-blue {
-    color: var(--blue);
-  }
-
-  /* Orange marks the current selection inside a glass chip. */
+  /* Violet marks the current selection inside a glass chip. */
   .tt-chip-active {
-    background: var(--chip-glass), var(--brand-orange-soft);
-    border-color: color-mix(in oklab, var(--red) 45%, var(--glass-border));
-    box-shadow: var(--ice-inset), 0 8px 18px -14px rgba(249, 115, 22, 0.72);
-    color: var(--primary);
+    background: color-mix(in oklab, var(--violet) 16%, var(--surface));
+    border-color: color-mix(in oklab, var(--violet) 45%, var(--glass-border));
+    box-shadow: var(--ice-inset), 0 8px 18px -14px color-mix(in oklab, var(--violet) 72%, transparent);
+    color: var(--violet);
   }
 
   .tt-btn {
@@ -559,32 +507,34 @@
     cursor: not-allowed;
   }
 
-  /* Flat fill + white-over-black sheen: every button reads as glass. */
+  /* Flat fill + white-over-black sheen: every button reads as glass.
+     Orange is the call to action, light blue the secondary. */
   .tt-btn-brand {
-    background: linear-gradient(145deg, color-mix(in oklab, var(--blue-bright) 92%, white) 0%, color-mix(in oklab, var(--blue) 94%, var(--red)) 100%);
-    color: #fff;
-    border: 1px solid color-mix(in oklab, var(--blue) 80%, white);
-    box-shadow: var(--ice-inset), var(--glow-cyan);
+    background: var(--orange);
+    color: var(--orange-foreground);
+    border: 1px solid color-mix(in oklab, var(--orange) 70%, white);
+    box-shadow: var(--ice-inset), var(--glow-primary);
   }
 
   .tt-btn-brand:hover {
     transform: translateY(-1px);
-    box-shadow: var(--ice-inset), var(--glow-cyan), 0 12px 26px -16px rgba(37, 99, 235, 0.72);
+    box-shadow: var(--ice-inset), var(--glow-primary), 0 12px 26px -16px color-mix(in oklab, var(--orange) 75%, transparent);
   }
 
-  .tt-btn-blue {
-    background: var(--sheen-flat), var(--blue);
-    color: #fff;
-    box-shadow: var(--ice-inset), var(--glow-cyan);
+  .tt-btn-secondary {
+    background: var(--sky);
+    color: var(--accent-foreground);
+    border: 1px solid color-mix(in oklab, var(--sky) 70%, white);
+    box-shadow: var(--ice-inset), var(--glow-sky);
   }
 
-  .tt-btn-blue:hover {
+  .tt-btn-secondary:hover {
     transform: translateY(-1px);
-    box-shadow: var(--ice-inset), var(--glow-cyan), 0 12px 26px -16px rgba(29, 78, 216, 0.7);
+    box-shadow: var(--ice-inset), var(--glow-sky), 0 12px 26px -16px color-mix(in oklab, var(--sky) 75%, transparent);
   }
 
   .tt-btn-ghost {
-    background: var(--chip-glass), transparent;
+    background: var(--surface);
     border: 1px solid var(--glass-border);
     color: var(--foreground);
     box-shadow: var(--ice-inset);
@@ -593,12 +543,12 @@
   }
 
   .tt-btn-ghost:hover {
-    border-color: color-mix(in oklab, var(--blue) 42%, var(--glass-border));
-    color: var(--blue);
+    border-color: color-mix(in oklab, var(--orange) 42%, var(--glass-border));
+    color: var(--orange);
   }
 
   .tt-field {
-    background: var(--chip-glass), var(--input-background);
+    background: var(--input-background);
     border: 1px solid var(--glass-border);
     border-radius: 999px;
     box-shadow: var(--ice-inset), inset 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -610,47 +560,28 @@
   .tt-field:focus-within,
   .tt-field:focus {
     outline: none;
-    border-color: color-mix(in oklab, var(--blue) 60%, var(--glass-border));
-    box-shadow: var(--ice-inset), 0 0 0 4px color-mix(in oklab, var(--blue) 14%, transparent);
+    border-color: color-mix(in oklab, var(--orange) 60%, var(--glass-border));
+    box-shadow: var(--ice-inset), 0 0 0 4px color-mix(in oklab, var(--orange) 14%, transparent);
   }
 
-  /* Tiles: blue by default, red for the rare accent tile. */
+  /* Icon and avatar tiles: a light blue wash, never a solid block. */
   .tt-brand-tile {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--sheen-flat), var(--blue);
-    color: #fff;
-    box-shadow: var(--ice-inset), var(--glow-cyan);
+    background: color-mix(in oklab, var(--sky) 14%, var(--surface));
+    color: var(--sky);
+    box-shadow: var(--ice-inset);
   }
 
-  .tt-brand-tile-orange {
-    background: var(--sheen-flat), var(--red);
-    box-shadow: var(--ice-inset), var(--glow-primary);
-  }
-
-  /* Logo mark: blue glass slab crossed by three red scratches. */
+  /* Logo mark: one flat orange slab carrying the wifi glyph, nothing else. */
   .tt-logo-mark {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(145deg, color-mix(in oklab, var(--blue-bright) 94%, white) 0%, var(--blue) 100%);
-    color: #fff;
-    box-shadow: var(--ice-inset), var(--glow-cyan);
-    overflow: hidden;
-  }
-
-  .tt-logo-mark::after {
-    content: "";
-    position: absolute;
-    inset: -22%;
-    background: color-mix(in oklab, var(--red) 86%, white);
-    -webkit-mask: var(--claw-mask) no-repeat center / contain;
-    mask: var(--claw-mask) no-repeat center / contain;
-    transform: rotate(-8deg);
-    opacity: 0.92;
-    pointer-events: none;
+    background: var(--orange);
+    color: var(--primary-foreground);
+    box-shadow: var(--ice-inset), var(--glow-primary);
   }
 
   .tt-skeleton {
@@ -664,13 +595,8 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in oklab, var(--foreground) 8%, transparent),
-      transparent
-    );
-    animation: tt-shimmer 1.5s ease-in-out infinite;
+    background: color-mix(in oklab, var(--foreground) 7%, transparent);
+    animation: tt-pulse 1.5s ease-in-out infinite;
   }
 
   .tt-fade-up {
@@ -714,29 +640,19 @@
     background: transparent;
   }
 
-  .tt-safe-bottom {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.25rem);
-  }
-
-  @media (min-width: 768px) {
-    .tt-safe-bottom {
-      padding-bottom: 1.5rem;
-    }
-  }
-
   .tt-scrim {
     background: var(--scrim);
   }
 
   .tt-divider-brand {
     height: 1px;
-    background: linear-gradient(90deg, var(--hairline), transparent 78%);
+    background: var(--hairline);
   }
 }
 
-@keyframes tt-shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+@keyframes tt-pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
 }
 
 @keyframes tt-fade-up {
@@ -807,7 +723,7 @@
 }
 
 .article-body a {
-  color: var(--blue);
+  color: var(--orange);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -845,9 +761,9 @@
 }
 
 .article-body blockquote {
-  border-left: 2px solid var(--red);
+  border-left: 2px solid var(--violet);
   border-radius: 0 0.5rem 0.5rem 0;
-  background: var(--blue-soft);
+  background: var(--sky-soft);
   padding: 0.6rem 1rem;
   margin: 1em 0;
   color: var(--muted-foreground);
@@ -889,233 +805,46 @@
   border: none;
   margin: 1.5em 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in oklab, var(--muted-foreground) 40%, transparent),
-    transparent
-  );
+  background: color-mix(in oklab, var(--muted-foreground) 32%, transparent);
 }
 
 /* ------------------------------------------------------------------
-   Wild scholar direction
+   Wild scholar refinements
 
-   The interface uses only blue, red, black, white and opacity. Depth
-  comes from paper-like surfaces, hairlines and controlled asymmetry instead
-   of colored gradients or ornamental glass.
+   Unlayered so these win over Tailwind's utilities: hairline edges on
+   flat paper surfaces, a crisper hover, and the claw watermark that
+   signs the shell. Palette and glass recipe are defined once, above.
 ------------------------------------------------------------------ */
-:root,
-.dark {
-  --background: #f7f7f4;
-  --foreground: #07101f;
-  --card: rgba(255, 255, 255, 0.94);
-  --card-foreground: #07101f;
-  --popover: rgba(255, 255, 255, 0.98);
-  --popover-foreground: #07101f;
-  --primary: #f97316;
-  --primary-foreground: #ffffff;
-  --secondary: rgba(7, 16, 31, 0.06);
-  --secondary-foreground: #07101f;
-  --muted: rgba(7, 16, 31, 0.06);
-  --muted-foreground: rgba(7, 16, 31, 0.58);
-  --accent: #5eead4;
-  --accent-foreground: #07101f;
-  --destructive: #f97316;
-  --destructive-foreground: #ffffff;
-  --border: rgba(7, 16, 31, 0.14);
-  --input: #ffffff;
-  --input-background: #ffffff;
-  --switch-background: rgba(7, 16, 31, 0.22);
-  --ring: rgba(18, 75, 214, 0.42);
-  --surface: rgba(255, 255, 255, 0.94);
-  --surface-2: rgba(7, 16, 31, 0.055);
-  --surface-3: rgba(18, 75, 214, 0.1);
-  --glass: rgba(255, 255, 255, 0.94);
-  --glass-strong: rgba(255, 255, 255, 0.98);
-  --glass-border: rgba(7, 16, 31, 0.14);
-  --hairline: rgba(7, 16, 31, 0.14);
-  --sheen: transparent;
-  --sheen-flat: transparent;
-  --chip-glass: transparent;
-  --ice-inset: inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(7, 16, 31, 0.06);
-  --claw-ink: rgba(7, 16, 31, 0.16);
-  --blue: #5eead4;
-  --blue-bright: #99f6e4;
-  --blue-soft: rgba(94, 234, 212, 0.1);
-  --red: #f97316;
-  --red-soft: rgba(249, 115, 22, 0.1);
-  --brand: #5eead4;
-  --brand-blue: #5eead4;
-  --brand-cyan: #5eead4;
-  --brand-gradient-soft: transparent;
-  --brand-blue-soft: rgba(94, 234, 212, 0.1);
-  --brand-orange-soft: rgba(249, 115, 22, 0.1);
-  --scrim: rgba(0, 0, 0, 0.72);
-  --mesh: transparent;
-  --shadow-card: 0 1px 0 rgba(7, 16, 31, 0.08), 0 18px 36px -28px rgba(7, 16, 31, 0.48);
-  --shadow-raised: 0 1px 0 rgba(7, 16, 31, 0.1), 0 26px 46px -30px rgba(7, 16, 31, 0.56);
-  --glow-primary: 0 12px 30px -18px rgba(249, 115, 22, 0.6);
-  --glow-cyan: 0 12px 30px -18px rgba(94, 234, 212, 0.55);
-  --sidebar: rgba(255, 255, 255, 0.96);
-  --sidebar-foreground: #07101f;
-  --sidebar-primary: #5eead4;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(94, 234, 212, 0.08);
-  --sidebar-accent-foreground: #07101f;
-  --sidebar-border: rgba(7, 16, 31, 0.14);
-  --sidebar-ring: rgba(94, 234, 212, 0.42);
-}
-
-.dark {
-  --background: #08090c;
-  --foreground: #f6f7f9;
-  --card: rgba(18, 20, 25, 0.96);
-  --card-foreground: #f6f7f9;
-  --popover: rgba(18, 20, 25, 0.98);
-  --popover-foreground: #f6f7f9;
-  --secondary: rgba(255, 255, 255, 0.07);
-  --secondary-foreground: #f6f7f9;
-  --muted: rgba(255, 255, 255, 0.07);
-  --muted-foreground: rgba(246, 247, 249, 0.58);
-  --accent: #5eead4;
-  --accent-foreground: #07101f;
-  --primary: #fb923c;
-  --destructive: #fb923c;
-  --border: rgba(255, 255, 255, 0.15);
-  --input: rgba(255, 255, 255, 0.06);
-  --input-background: rgba(255, 255, 255, 0.06);
-  --switch-background: rgba(255, 255, 255, 0.22);
-  --ring: rgba(78, 130, 255, 0.56);
-  --surface: rgba(18, 20, 25, 0.96);
-  --surface-2: rgba(255, 255, 255, 0.07);
-  --surface-3: rgba(94, 234, 212, 0.12);
-  --glass: rgba(18, 20, 25, 0.96);
-  --glass-strong: rgba(8, 9, 12, 0.98);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --hairline: rgba(255, 255, 255, 0.16);
-  --ice-inset: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.42);
-  --claw-ink: rgba(255, 255, 255, 0.18);
-  --blue: #5eead4;
-  --blue-bright: #99f6e4;
-  --blue-soft: rgba(94, 234, 212, 0.14);
-  --red: #fb923c;
-  --red-soft: rgba(251, 146, 60, 0.14);
-  --brand: #5eead4;
-  --brand-blue: #5eead4;
-  --brand-cyan: #5eead4;
-  --brand-blue-soft: rgba(94, 234, 212, 0.14);
-  --brand-orange-soft: rgba(251, 146, 60, 0.14);
-  --scrim: rgba(0, 0, 0, 0.82);
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.08), 0 22px 48px -30px rgba(0, 0, 0, 0.95);
-  --shadow-raised: 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 56px -32px rgba(0, 0, 0, 1);
-  --sidebar: rgba(16, 13, 28, 0.98);
-  --sidebar-foreground: #f6f7f9;
-  --sidebar-primary: #5eead4;
-  --sidebar-primary-foreground: #05070b;
-  --sidebar-accent: rgba(94, 234, 212, 0.12);
-  --sidebar-accent-foreground: #f6f7f9;
-  --sidebar-border: rgba(255, 255, 255, 0.15);
-  --sidebar-ring: rgba(94, 234, 212, 0.5);
-}
 
 .tt-shell {
   position: relative;
   isolation: isolate;
-  background: var(--background);
 }
 
 .tt-shell::before {
   content: "";
   position: fixed;
   z-index: -1;
-  top: 8vh;
-  right: 3vw;
-  width: 15rem;
-  height: 7rem;
-  opacity: 0.11;
-  background: var(--primary);
-  clip-path: polygon(0 45%, 17% 32%, 36% 42%, 58% 16%, 79% 33%, 100% 0, 93% 100%, 70% 64%, 49% 84%, 28% 59%, 8% 78%);
-  transform: rotate(-7deg);
+  top: 6vh;
+  right: 2vw;
+  width: 17rem;
+  height: 17rem;
+  opacity: 0.075;
+  background: var(--violet);
+  -webkit-mask: var(--claw-mask) no-repeat center / contain;
+  mask: var(--claw-mask) no-repeat center / contain;
+  transform: rotate(-14deg);
   pointer-events: none;
-}
-
-.tt-glass,
-.tt-glass-strong,
-.tt-ice,
-.tt-surface,
-.tt-card,
-.tt-field,
-.tt-chip,
-.tt-btn-ghost {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background-image: none;
 }
 
 .tt-glass,
 .tt-glass-strong,
 .tt-surface,
 .tt-card {
-  border-radius: 0.85rem;
-}
-
-.tt-card::before,
-.tt-ice::before {
-  display: none;
+  border-color: var(--hairline);
 }
 
 .tt-card-hover:hover {
   transform: translateY(-2px);
-  border-color: var(--blue);
-}
-
-.tt-logo,
-.tt-gradient-text,
-.tt-gradient-text-blue {
-  background: none;
-  color: var(--blue);
-  -webkit-text-fill-color: currentColor;
-}
-
-.tt-btn-brand,
-.tt-btn-blue,
-.tt-brand-tile,
-.tt-brand-tile-orange,
-.tt-logo-mark {
-  background-image: none;
-}
-
-.tt-btn-brand,
-.tt-brand-tile,
-.tt-logo-mark {
-  background-color: var(--blue);
-}
-
-.tt-btn-blue {
-  background-color: var(--blue);
-}
-
-.tt-brand-tile-orange {
-  background-color: var(--red);
-}
-
-.tt-btn-brand:hover,
-.tt-btn-blue:hover {
-  box-shadow: 0 10px 24px -16px var(--blue);
-}
-
-.tt-scratch {
-  background: var(--hairline);
-}
-
-.tt-divider-brand {
-  background: var(--hairline);
-}
-
-.tt-skeleton::after {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.tt-logo-mark::after {
-  display: none;
+  border-color: color-mix(in oklab, var(--orange) 55%, var(--hairline));
 }

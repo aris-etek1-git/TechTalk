@@ -45,11 +45,11 @@ const FEATURES = [
 ];
 
 const SOURCE_CHIPS = [
-  { icon: Youtube, label: "YouTube", tint: "bg-primary text-white" },
-  { icon: MessageCircle, label: "Reddit", tint: "bg-accent text-white" },
-  { icon: Twitter, label: "X", tint: "bg-foreground text-white" },
-  { icon: Github, label: "GitHub", tint: "bg-foreground text-white" },
-  { icon: Braces, label: "LeetCode", tint: "bg-primary text-white" },
+  { icon: Youtube, label: "YouTube", tint: "bg-primary text-primary-foreground" },
+  { icon: MessageCircle, label: "Reddit", tint: "bg-accent text-accent-foreground" },
+  { icon: Twitter, label: "X", tint: "bg-foreground text-background" },
+  { icon: Github, label: "GitHub", tint: "bg-foreground text-background" },
+  { icon: Braces, label: "LeetCode", tint: "bg-primary text-primary-foreground" },
 ];
 
 const CORE_DIMENSIONS = ["Learn", "Practice", "Build", "Connect", "Campus", "Opportunities"];
@@ -84,15 +84,15 @@ export function LandingScreen() {
           <div className="ml-auto flex items-center gap-1.5">
             <ThemeToggle />
             {loggedIn ? (
-              <Link to="/feed" className="tt-btn tt-btn-brand px-4 py-2 text-sm">
+              <Link to="/feed" className="tt-btn tt-btn-brand whitespace-nowrap px-4 py-2 text-sm">
                 Ma plateforme
               </Link>
             ) : (
               <>
-                <Link to="/login" className="tt-btn tt-btn-ghost px-4 py-2 text-sm">
+                <Link to="/login" className="tt-btn tt-btn-ghost whitespace-nowrap px-4 py-2 text-sm">
                   Se connecter
                 </Link>
-                <Link to="/login" className="tt-btn tt-btn-brand px-4 py-2 text-sm">
+                <Link to="/login" className="tt-btn tt-btn-brand whitespace-nowrap px-4 py-2 text-sm">
                   S'inscrire
                 </Link>
               </>
@@ -112,7 +112,7 @@ export function LandingScreen() {
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.1] mb-5">
               La plateforme vidéo
               <br />
-              des <span className="tt-accent-blue">développeurs</span>
+              des <span className="tt-accent-violet">développeurs</span>
             </h1>
             <p className="text-[15px] text-muted-foreground leading-relaxed mb-7 max-w-md">
               Découvrez, apprenez et partagez autour du code, de la tech et de l'IA.
@@ -130,7 +130,7 @@ export function LandingScreen() {
               <Link to={loggedIn ? "/feed" : "/login"} className="tt-btn tt-btn-brand px-6 py-3 text-sm gap-2">
                 Commencer <ArrowRight size={15} />
               </Link>
-              <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn tt-btn-blue px-6 py-3 text-sm gap-2">
+              <Link to={loggedIn ? "/explore" : "/login"} className="tt-btn tt-btn-secondary px-6 py-3 text-sm gap-2">
                 <Search size={15} /> Explorer
               </Link>
             </div>
@@ -152,23 +152,23 @@ export function LandingScreen() {
             <div className="relative w-[380px] h-[300px]">
               <div className="absolute inset-x-6 bottom-6 h-[210px] rounded-2xl overflow-hidden border border-border shadow-2xl" style={{ background: "var(--surface)" }}>
                 <div className="h-7 flex items-center gap-1.5 px-3 border-b border-border/60">
-                  <span className="w-2 h-2 rounded-full bg-red-400" />
+                  <span className="w-2 h-2 rounded-full bg-orange" />
                   <span className="w-2 h-2 rounded-full bg-white/60" />
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="w-2 h-2 rounded-full bg-sky" />
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="tt-skeleton h-3 w-3/4" style={{ background: "var(--surface-2)" }} />
                   <div className="tt-skeleton h-3 w-full" style={{ background: "var(--surface-2)" }} />
                   <div className="tt-skeleton h-3 w-2/3" style={{ background: "var(--surface-2)" }} />
-                  <div className="mt-4 aspect-[16/9] rounded-xl flex items-center justify-center" style={{ background: "var(--sheen-flat), var(--blue)" }}>
-                    <Play size={30} className="text-white fill-white ml-1" />
+                  <div className="mt-4 aspect-[16/9] rounded-xl flex items-center justify-center" style={{ background: "var(--orange)" }}>
+                    <Play size={30} className="text-primary-foreground fill-primary-foreground ml-1" />
                   </div>
                 </div>
               </div>
               {SOURCE_CHIPS.map(({ icon: Icon, tint }, i) => (
                 <span
                   key={i}
-                  className={`absolute w-11 h-11 rounded-2xl ${tint} flex items-center justify-center text-white shadow-xl border border-white/20`}
+                  className={`absolute w-11 h-11 rounded-2xl ${tint} flex items-center justify-center shadow-xl border border-white/20`}
                   style={{
                     left: [12, 300, 60, 285][i],
                     top: [0, 30, 210, 155][i],
@@ -181,6 +181,8 @@ export function LandingScreen() {
             </div>
           </div>
         </section>
+
+        <div className="tt-scratch max-w-5xl mx-auto" aria-hidden />
 
         {/* Features */}
         <section className="max-w-6xl mx-auto px-4 py-10">

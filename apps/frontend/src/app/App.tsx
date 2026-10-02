@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { Rss } from "lucide-react";
+import { Wifi } from "lucide-react";
 import { Toaster } from "sonner";
 import { api, User as ApiUser } from "../services/api";
 import { AppStoreProvider } from "./store";
@@ -28,9 +28,9 @@ function BootSpinner() {
   return (
     <div className="min-h-dvh tt-shell flex flex-col items-center justify-center gap-5">
       <span className="tt-logo-mark w-12 h-12 rounded-2xl tt-pop">
-        <Rss size={20} />
+        <Wifi size={20} />
       </span>
-      <span className="w-28 h-[3px] rounded-full opacity-80" style={{ background: "var(--blue)" }} />
+      <span className="w-28 h-[3px] rounded-full opacity-80" style={{ background: "var(--orange)" }} />
     </div>
   );
 }
