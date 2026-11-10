@@ -38,7 +38,7 @@ declare module 'fastify' {
 }
 
 // @fastify/cors only allows GET, HEAD and POST by default; the API also uses PUT, PATCH and DELETE.
-fastify.register(cors, { origin: config.corsOrigin, methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] });
+fastify.register(cors, { origin: config.corsOrigins, methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] });
 // This is a JSON API, so the default policy is the strict one; the site sets its own CSP.
 fastify.register(helmet, { crossOriginResourcePolicy: { policy: 'cross-origin' } });
 // Generous on purpose: one page load makes a dozen calls and a campus shares one address.

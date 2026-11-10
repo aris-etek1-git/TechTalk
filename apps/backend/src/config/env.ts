@@ -19,8 +19,12 @@ if (isProduction) {
   if (secret.length < 32 || /your_jwt_secret|changeme|secret_key_here/i.test(secret)) {
     problems.push('JWT_SECRET must be a random string of at least 32 characters');
   }
-  if (!process.env.FRONTEND_URL || /localhost|127\.0\.0\.1/.test(process.env.FRONTEND_URL)) {
-    problems.push('FRONTEND_URL must be the public address of the website (CORS)');
+  const origins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+  if (!origins.length || origins.some((o) => /localhost|127\.0\.0\.1/.test(o))) {
+    problems.push('FRONTEND_URL(S) must be the public address(es) of the website (CORS)');
   }
   if (process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length < 12) {
     problems.push('ADMIN_PASSWORD must be at least 12 characters in production');
@@ -66,7 +70,12 @@ export const config = {
   },
   // Public address of the website, used in the sitemap and social previews.
   siteUrl: process.env.SITE_URL || process.env.FRONTEND_URL || 'http://localhost:5173',
+  // CORS: one origin (FRONTEND_URL, legacy) or several, comma-separated (FRONTEND_URLS).
   corsOrigin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  corsOrigins: (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map((o) => o.trim().replace(/\/+$/, ''))
+    .filter(Boolean),
   scrapers: {
     youtubeApiKey: process.env.YOUTUBE_API_KEY,
     redditClientId: process.env.REDDIT_CLIENT_ID,
