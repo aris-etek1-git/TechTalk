@@ -317,24 +317,42 @@ function githubRedirectUri(request: FastifyRequest): string {
   return `${proto}://${host}/api/auth/github/callback`;
 }
 
+/** Which frontend site to send the browser back to: the origin it arrived from
+ *  when it is a known one (Origin header on an XHR, Referer on a plain link),
+ *  else the primary site. */
+function frontendOrigin(request: FastifyRequest): string {
+  const allowed = config.corsOrigins ?? [config.corsOrigin];
+  for (const header of [request.headers.origin, request.headers.referer]) {
+    if (typeof header !== 'string' || !header) continue;
+    try {
+      const origin = new URL(header).origin;
+      if (allowed.includes(origin)) return origin;
+    } catch {
+      /* not a URL — ignore */
+    }
+  }
+  return config.corsOrigin;
+}
+
 // CSRF: the state is a signed, expiring token echoed back by GitHub; no cookie
 // plugin is required to verify it came from this server. It may carry the id of
 // an already signed-in user, which turns the round trip into "link this GitHub
-// account to me" instead of "sign me in".
+// account to me" instead of "sign me in", plus the frontend origin so the
+// callback can send the browser back to the site it came from.
 const STATE_TTL_MS = 10 * 60 * 1000;
 function signState(payload: string): string {
   return createHmac('sha256', config.jwtSecret).update(payload).digest('hex');
 }
-export function makeGithubState(linkUserId?: string): string {
-  const payload = `${randomBytes(16).toString('hex')}.${linkUserId ?? '-'}.${Date.now()}`;
+export function makeGithubState(linkUserId?: string, origin = config.corsOrigin): string {
+  const payload = `${randomBytes(16).toString('hex')}.${linkUserId ?? '-'}.${Date.now()}.${Buffer.from(origin).toString('base64url')}`;
   return `${payload}.${signState(payload)}`;
 }
-function parseGithubState(state: string | undefined): { ok: boolean; linkUserId?: string } {
+function parseGithubState(state: string | undefined): { ok: boolean; linkUserId?: string; origin?: string } {
   if (!state) return { ok: false };
   const parts = state.split('.');
-  if (parts.length !== 4) return { ok: false };
-  const [nonce, uid, ts, signature] = parts as [string, string, string, string];
-  const payload = `${nonce}.${uid}.${ts}`;
+  if (parts.length !== 5) return { ok: false };
+  const [nonce, uid, ts, originPart, signature] = parts as [string, string, string, string, string];
+  const payload = `${nonce}.${uid}.${ts}.${originPart}`;
   try {
     const expected = Buffer.from(signState(payload));
     const given = Buffer.from(signature);
@@ -343,7 +361,16 @@ function parseGithubState(state: string | undefined): { ok: boolean; linkUserId?
     return { ok: false };
   }
   if (!Number.isFinite(Number(ts)) || Date.now() - Number(ts) > STATE_TTL_MS) return { ok: false };
-  return { ok: true, linkUserId: uid === '-' ? undefined : uid };
+  // Only allowlisted origins are honoured, so a tampered state cannot bounce
+  // the browser to an unknown site.
+  let origin: string | undefined;
+  try {
+    const decoded = Buffer.from(originPart, 'base64url').toString('utf8');
+    origin = config.corsOrigins.includes(decoded) ? decoded : undefined;
+  } catch {
+    /* malformed base64 — fall back to the primary site */
+  }
+  return { ok: true, linkUserId: uid === '-' ? undefined : uid, origin };
 }
 
 /** The GitHub consent URL; `linkUserId` makes the round trip a link, not a login. */
@@ -352,7 +379,7 @@ export function githubAuthorizeUrl(request: FastifyRequest, clientId: string, li
   url.searchParams.set('client_id', clientId);
   url.searchParams.set('redirect_uri', githubRedirectUri(request));
   url.searchParams.set('scope', 'read:user user:email');
-  url.searchParams.set('state', makeGithubState(linkUserId));
+  url.searchParams.set('state', makeGithubState(linkUserId, frontendOrigin(request)));
   return url.toString();
 }
 
@@ -364,12 +391,12 @@ export function githubAuthorizeUrl(request: FastifyRequest, clientId: string, li
 export async function handleGithubStart(request: FastifyRequest, reply: FastifyReply) {
   try {
     if (!config.githubClientId || !config.githubClientSecret) {
-      return reply.redirect(`${config.corsOrigin}/login#gh_unavailable=1`);
+      return reply.redirect(`${frontendOrigin(request)}/login#gh_unavailable=1`);
     }
     return reply.redirect(githubAuthorizeUrl(request, config.githubClientId));
   } catch (error) {
     request.log.error(error);
-    return reply.redirect(`${config.corsOrigin}/login#gh_error=server`);
+    return reply.redirect(`${frontendOrigin(request)}/login#gh_error=server`);
   }
 }
 
@@ -380,7 +407,10 @@ export async function handleGithubStart(request: FastifyRequest, reply: FastifyR
  * the URL fragment — which is never sent to any server or logged in a Referer.
  */
 export async function handleGithubCallback(request: FastifyRequest, reply: FastifyReply) {
-  const frontend = config.corsOrigin;
+  // Where to send the browser back to; replaced by the frontend origin saved in
+  // the state once parsed — the callback itself arrives with no Origin/Referer
+  // of the site that started the round trip.
+  let frontend = config.corsOrigin;
   const fail = (reason: string, detail?: unknown) => {
     request.log.warn({ reason, detail }, 'github_oauth_fail');
     return reply.redirect(`${frontend}/login#gh_error=${reason}`);
@@ -390,6 +420,7 @@ export async function handleGithubCallback(request: FastifyRequest, reply: Fasti
     if (error) return fail(error === 'access_denied' ? 'cancelled' : 'provider', error);
     const parsedState = parseGithubState(state);
     if (!code || !parsedState.ok) return fail('state', { hasCode: !!code });
+    frontend = parsedState.origin || config.corsOrigin;
     if (!config.githubClientId || !config.githubClientSecret) return fail('unconfigured');
 
     const tokenRes = await fetch(`${GITHUB_API}/login/oauth/access_token`, {

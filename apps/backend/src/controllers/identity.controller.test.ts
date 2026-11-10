@@ -7,6 +7,8 @@ vi.mock('../config/env.js', () => ({
     githubClientSecret: 'gh-secret',
     jwtSecret: 'test-secret',
     nodeEnv: 'test',
+    corsOrigin: 'http://localhost:5173',
+    corsOrigins: ['http://localhost:5173'],
   },
 }));
 
